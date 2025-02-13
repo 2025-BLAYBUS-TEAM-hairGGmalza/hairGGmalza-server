@@ -1,14 +1,32 @@
 package hair.hairgg.designer;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
-@RequiredArgsConstructor
 @Getter
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class Designer {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "designerId")
     private long id;
+    @Column(nullable = false, length = 10)
+    private String name;
+    @Column(nullable = false)
+    private Region region;
+    @Column(nullable = false)
+    private String address;
+    @Column(nullable = false)
+    private String profile;
+    @Column(nullable = false)
+    private String description;
+    @Column(nullable = false)
+    private int offlinePrice;
+    @Column(nullable = false)
+    private int onlinePrice;
+    @Column(nullable = false)
+    private MeetingType meetingType;
 }
