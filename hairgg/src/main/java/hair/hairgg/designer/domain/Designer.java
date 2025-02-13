@@ -1,4 +1,4 @@
-package hair.hairgg.designer;
+package hair.hairgg.designer.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
