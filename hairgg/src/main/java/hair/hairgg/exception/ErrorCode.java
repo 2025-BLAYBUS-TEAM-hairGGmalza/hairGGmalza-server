@@ -1,4 +1,4 @@
-package hair.hairgg.config.exception;
+package hair.hairgg.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,7 +13,6 @@ public enum ErrorCode {
 	//추가 도메인별 에러
 
 	//member
-
 
 	//reservation
 	RESERVATION_NOT_FOUND(404, "R001", "예약을 찾을 수 없습니다.");

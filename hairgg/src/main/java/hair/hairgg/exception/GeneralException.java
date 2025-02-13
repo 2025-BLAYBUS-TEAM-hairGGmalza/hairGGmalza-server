@@ -1,4 +1,4 @@
-package hair.hairgg.config.exception;
+package hair.hairgg.exception;
 
 import lombok.Getter;
 

@@ -1,6 +1,6 @@
 package hair.hairgg.apiPayLoad;
 
-import hair.hairgg.config.exception.ErrorCode;
+import hair.hairgg.exception.ErrorCode;
 import lombok.Builder;
 import lombok.Getter;
 

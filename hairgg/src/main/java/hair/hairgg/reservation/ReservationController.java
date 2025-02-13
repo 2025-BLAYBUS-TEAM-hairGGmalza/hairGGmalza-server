@@ -5,8 +5,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import hair.hairgg.apiPayLoad.ApiResponse;
-import hair.hairgg.config.exception.ErrorCode;
-import hair.hairgg.config.exception.custom.ReservationError;
+import hair.hairgg.exception.ErrorCode;
+import hair.hairgg.exception.custom.ReservationError;
 
 @RestController
 @RequestMapping("/reservation")
