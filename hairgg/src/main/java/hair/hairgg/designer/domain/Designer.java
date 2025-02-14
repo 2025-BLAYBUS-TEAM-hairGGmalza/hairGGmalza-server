@@ -3,6 +3,9 @@ package hair.hairgg.designer.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @Builder
@@ -15,7 +18,7 @@ public class Designer {
     private Long id;
     @Column(nullable = false, length = 10)
     private String name;
-    @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.ORDINAL)
     private Region region;
     @Column(nullable = false)
     private String address;
@@ -27,6 +30,14 @@ public class Designer {
     private int offlinePrice;
     @Column(nullable = false)
     private int onlinePrice;
-    @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.ORDINAL)
     private MeetingType meetingType;
+    @OneToMany(mappedBy = "designer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<DesignerMajor> designerMajors = new ArrayList<>();
+
+    public void addDesignerMajor(DesignerMajor designerMajor) {
+        this.designerMajors.add(designerMajor);
+        designerMajor.updateDesigner(this);
+    }
 }
