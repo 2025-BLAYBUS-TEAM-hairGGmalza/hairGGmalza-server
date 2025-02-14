@@ -11,7 +11,6 @@ public class ReservationConverter {
 			.meetingType(request.meetingType())
 			.price(price)//TODO:디자이너의 가격을 가져와야함
 			.reservationDate(request.reservationDate())
-			.reservationState(ReservationState.WAITING)
 			.build();
 	}
 

@@ -20,8 +20,9 @@ public class ReservationController {
 	private final ReservationService reservationService;
 
 	@PostMapping
-	public ApiResponse<ReservationDto.ReservationInfo> createReservation(@Valid @RequestBody ReservationDto.ReservationRequest request) {
-		Reservation newReservation=reservationService.createReservation(request);
+	public ApiResponse<ReservationDto.ReservationInfo> createReservation(
+		@Valid @RequestBody ReservationDto.ReservationRequest request) {
+		Reservation newReservation = reservationService.createReservation(request);
 		return ApiResponse.success("예약 생성 성공", ReservationConverter.toReservationInfo(newReservation));
 	}
 }
