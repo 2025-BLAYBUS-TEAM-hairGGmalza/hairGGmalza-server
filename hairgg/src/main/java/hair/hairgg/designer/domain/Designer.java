@@ -12,10 +12,10 @@ public class Designer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "designerId")
-    private long id;
+    private Long id;
     @Column(nullable = false, length = 10)
     private String name;
-    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private Region region;
     @Column(nullable = false)
     private String address;
@@ -27,6 +27,6 @@ public class Designer {
     private int offlinePrice;
     @Column(nullable = false)
     private int onlinePrice;
-    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private MeetingType meetingType;
 }
