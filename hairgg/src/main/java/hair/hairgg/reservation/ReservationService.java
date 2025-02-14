@@ -1,6 +1,7 @@
 package hair.hairgg.reservation;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
@@ -67,6 +68,7 @@ public class ReservationService {
 		return true;
 	}
 	private boolean isTimeAlreadyBooked(Long designerId,LocalDateTime reservationTime) {
-		return !reservationRepository.findByDesigner_IdAndReservationDateAndReservationState(designerId,reservationTime,ReservationState.ACCEPTED).isEmpty();
+		return !reservationRepository.findByDesigner_IdAndReservationDateAndReservationStateIn(designerId,reservationTime,
+			List.of(ReservationState.WAITING,ReservationState.ACCEPTED)).isEmpty();
 	}
 }
