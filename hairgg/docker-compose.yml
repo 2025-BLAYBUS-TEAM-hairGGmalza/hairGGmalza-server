@@ -1,15 +1,17 @@
 version: '3.8'
 
 services:
-  mysql:
-    image: mysql:latest
-    container_name: mysql-container
-    restart: always
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
     environment:
-      MYSQL_ROOT_PASSWORD: "1234"
-    ports:
-      - "3307:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-volumes:
-  mysql_data:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/hairgg?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: hairgg123
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    name: app-network  # ✅ 기존 네트워크를 명확히 지정
