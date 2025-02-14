@@ -22,7 +22,8 @@ public enum ErrorCode {
 	RESERVATION_TIME_PAST(400, "R004", "예약 시간은 현재 시간보다 뒤여야 합니다."),
 	MEETING_TYPE_INVALID(400, "R005", "미팅 방식이 올바르지 않습니다."),
 	//designer
-	DESIGNER_NOT_FOUND(404, "D001", "디자이너를 찾을 수 없습니다.");
+	DESIGNER_NOT_FOUND(404, "D001", "디자이너를 찾을 수 없습니다."),
+	PRICE_NOT_FOUND(404, "D002", "가격을 찾을 수 없습니다.");
 
 	private final int status;
 	private final String code;

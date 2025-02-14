@@ -25,23 +25,25 @@ public class ReservationService {
 	private final MemberService memberService;
 	private final DesignerService designerService;
 
-
 	public Reservation createReservation(ReservationDto.ReservationRequest request) {
 		validate(request);
 		//디자이너의 가격 가져옴 디자이너 서비스 로직 가져올 것
-		Member member=memberService.findById(request.memberId());
-		Designer designer=designerService.getDesignerById(request.designerId());
-		int price=calculatePrice(request,designer);
+		Member member = memberService.findById(request.memberId());
+		Designer designer = designerService.getDesignerById(request.designerId());
+		Integer price = designer.getPriceByMeetingType(request.meetingType());
+		if (price == null) {
+			throw new ReservationError(ErrorCode.PRICE_NOT_FOUND);
+		}
 		//TODO: 더미값. 추후 디자이너 서비스 로직으로 변경
-		Reservation newReservation = ReservationConverter.toEntity(request,price,member,designer);
+		Reservation newReservation = ReservationConverter.toEntity(request, price, member, designer);
 		return reservationRepository.save(newReservation);
 	}
 
 	private int calculatePrice(ReservationDto.ReservationRequest request, Designer designer) {
-		if(request.meetingType()== MeetingType.ONLINE) {
+		if (request.meetingType() == MeetingType.ONLINE) {
 			return designer.getOnlinePrice();
 		}
-		if(request.meetingType()== MeetingType.OFFLINE) {
+		if (request.meetingType() == MeetingType.OFFLINE) {
 			return designer.getOfflinePrice();
 		}
 		throw new ReservationError(ErrorCode.MEETING_TYPE_INVALID);
@@ -49,26 +51,28 @@ public class ReservationService {
 
 	private void validate(ReservationDto.ReservationRequest request) {
 		LocalDateTime reservationTime = request.reservationDate();
-		Long designerId=request.designerId();
+		Long designerId = request.designerId();
 		if (!isValidTime(request.reservationDate())) {
 			throw new ReservationError(ErrorCode.RESERVATION_TIME_INVALID);
 		}
-		if(reservationTime.isBefore(LocalDateTime.now())) {
+		if (reservationTime.isBefore(LocalDateTime.now())) {
 			throw new ReservationError(ErrorCode.RESERVATION_TIME_PAST);
 		}
-		if (isTimeAlreadyBooked(designerId,reservationTime)) {
+		if (isTimeAlreadyBooked(designerId, reservationTime)) {
 			throw new ReservationError(ErrorCode.RESERVATION_TIME_ALREADY_BOOKED);
 		}
 	}
 
 	private boolean isValidTime(LocalDateTime reservationTime) {
-		if(reservationTime.getMinute()%30!=0) {
+		if (reservationTime.getMinute() % 30 != 0) {
 			return false;
 		}
 		return true;
 	}
-	private boolean isTimeAlreadyBooked(Long designerId,LocalDateTime reservationTime) {
-		return !reservationRepository.findByDesigner_IdAndReservationDateAndReservationStateIn(designerId,reservationTime,
-			List.of(ReservationState.WAITING,ReservationState.ACCEPTED)).isEmpty();
+
+	private boolean isTimeAlreadyBooked(Long designerId, LocalDateTime reservationTime) {
+		return !reservationRepository.findByDesigner_IdAndReservationDateAndReservationStateIn(designerId,
+			reservationTime,
+			List.of(ReservationState.WAITING, ReservationState.ACCEPTED)).isEmpty();
 	}
 }
