@@ -31,7 +31,8 @@ jobs:
         id: test
         run: |
           set +e
-          ./gradlew test | tee test-results.log
+          chmod +x ./gradlew
+          ./hairgg/gradlew test | tee test-results.log
           TEST_EXIT_CODE=${PIPESTATUS[0]}
           echo "TEST_RESULT=$(tail -n 10 test-results.log | base64 -w0)" >> $GITHUB_ENV
           exit $TEST_EXIT_CODE
@@ -48,7 +49,7 @@ jobs:
           only_if: failure()  # 실패 시에만 알림 전송
 
       - name: Gradle 빌드 실행 (JAR 생성)
-        run: ./gradlew build -x test
+        run: ./hairgg/gradlew build -x test
 
       - name: JAR 파일 EC2에 전송
         uses: appleboy/scp-action@master
@@ -56,7 +57,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: "build/libs/*.jar"
+          source: "/hairgg/build/libs/*.jar"
           target: "~/app.jar"
 
       - name: Docker Compose 실행 (EC2 내부)
