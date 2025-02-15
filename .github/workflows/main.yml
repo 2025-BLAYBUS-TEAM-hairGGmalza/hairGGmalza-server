@@ -1,0 +1,77 @@
+name: CI/CD for Spring Boot
+
+on:
+  push:
+    branches:
+      - feat/cicd  # 특정 브랜치 지정
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout 코드 가져오기
+        uses: actions/checkout@v4
+
+      - name: JDK 21 설정
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Gradle 캐싱 설정 (선택 사항)
+        uses: actions/cache@v3
+        with:
+          path: ~/.gradle/caches
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}
+
+      - name: Gradle 테스트 실행
+        id: test
+        run: |
+          set +e
+          ./gradlew test | tee test-results.log
+          TEST_EXIT_CODE=${PIPESTATUS[0]}
+          echo "TEST_RESULT=$(tail -n 10 test-results.log | base64 -w0)" >> $GITHUB_ENV
+          exit $TEST_EXIT_CODE
+
+      - name: 테스트 결과 Discord 전송
+        uses: Ilshidur/action-discord@master
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          message: |
+            Spring Boot 테스트 결과:
+            ```
+            ${{ env.TEST_RESULT }}
+            ```
+          only_if: failure()  # 실패 시에만 알림 전송
+
+      - name: Gradle 빌드 실행 (JAR 생성)
+        run: ./gradlew build -x test
+
+      - name: JAR 파일 EC2에 전송
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "build/libs/*.jar"
+          target: "~/app.jar"
+
+      - name: Docker Compose 실행 (EC2 내부)
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd ~
+            docker-compose down
+            docker-compose up -d
+
+      - name: 배포 성공 Discord 알림 전송
+        uses: Ilshidur/action-discord@master
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          message: "✅ Spring Boot 배포 성공 🚀"
