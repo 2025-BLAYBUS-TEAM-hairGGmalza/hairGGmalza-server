@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import hair.hairgg.designer.domain.Designer;
-import hair.hairgg.designer.domain.DesignerService;
 import hair.hairgg.designer.domain.MeetingType;
+import hair.hairgg.designer.service.DesignerService;
 import hair.hairgg.exception.ErrorCode;
 import hair.hairgg.exception.custom.ReservationError;
 import hair.hairgg.member.Member;
