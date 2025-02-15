@@ -1,14 +1,15 @@
 package hair.hairgg.designer.domain;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
-@NoArgsConstructor
 @Getter
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class DesignerMajor {
 
     @Id
@@ -25,4 +26,8 @@ public class DesignerMajor {
     @JoinColumn(name = "majorId")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Major major;
+
+    public void updateDesigner(Designer designer) {
+        this.designer = designer;
+    }
 }
