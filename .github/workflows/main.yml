@@ -81,7 +81,7 @@ jobs:
           script: |
             cd ~
             docker-compose down
-            docker-compose up -d
+            docker-compose up --build -d
 
       # - name: 배포 성공 Discord 알림 전송
       #   uses: Ilshidur/action-discord@master
