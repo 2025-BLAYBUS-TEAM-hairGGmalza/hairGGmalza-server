@@ -15,7 +15,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set the tag name from previous workflow
-        run: echo "TAG_NAME=${{ needs.tag_push.outputs.tag_name }}" >> $GITHUB_ENV  # 태그 이름을 환경 변수로 설정
+        run: echo "TAG_NAME=${{ env.TAG_NAME }}"  # 이전 워크플로우에서 설정된 환경 변수를 읽음
 
       - name: JDK 21 설정
         uses: actions/setup-java@v3
