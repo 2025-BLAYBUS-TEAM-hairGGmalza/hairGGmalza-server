@@ -1,14 +1,10 @@
 name: CI/CD for Spring Boot
 
 on:
-  push:
-    tags:
-      - 'v*'  # 모든 'v'로 시작하는 태그에 대해 실행
-
-permissions:
-  contents: write  # 레포지토리 내용(코드 포함)에 대한 쓰기 권한
-  actions: write  # GitHub Actions 실행 권한
-  packages: write
+  workflow_run:
+    workflows: ["tag-push.yml"]  # 이전 워크플로우 이름
+    types:
+      - completed
 
 jobs:
   build:
@@ -18,53 +14,19 @@ jobs:
       - name: Checkout 코드 가져오기
         uses: actions/checkout@v4
 
+      - name: Set the tag name from previous workflow
+        run: echo "TAG_NAME=${{ needs.tag_push.outputs.tag_name }}" >> $GITHUB_ENV  # 태그 이름을 환경 변수로 설정
+
       - name: JDK 21 설정
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Gradle 캐싱 설정 (선택 사항)
-        uses: actions/cache@v3
-        with:
-          path: ~/.gradle/caches
-          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            gradle-${{ runner.os }}
-
-      # - name: Gradle 테스트 실행
-      #   id: test
-      #   working-directory: hairgg
-      #   run: |
-      #     set +e
-      #     chmod +x ./gradlew
-      #     ./gradlew -ex | tee test-results.log
-      #     TEST_EXIT_CODE=${PIPESTATUS[0]}
-      #     echo "TEST_RESULT=$(tail -n 10 test-results.log | base64 -w0)" >> $GITHUB_ENV
-      #     exit $TEST_EXIT_CODE
-
-
-      # - name: 테스트 결과 Discord 전송
-      #   uses: Ilshidur/action-discord@master
-      #   with:
-      #     webhook: ${{ secrets.DISCORD_WEBHOOK }}
-      #     message: |
-      #       Spring Boot 테스트 결과:
-      #       ```
-      #       ${{ env.TEST_RESULT }}
-      #       ```
-      #     only_if: failure()  # 실패 시에만 알림 전송
-      - name: Create and push Git tag
-        run: |
-          # Git 태그 생성 (버전 태그를 사용하거나 날짜 및 시간으로 고유 태그 생성)
-          TAG_NAME="v$(date +'%Y%m%d%H%M%S')"  # 예: v20250216054030
-          git tag $TAG_NAME
-          git push origin $TAG_NAME
-
       - name: Gradle 빌드 실행 (JAR 생성)
         run: ./gradlew build -x test
         working-directory: hairgg  # Gradle이 있는 디렉터리 지정
-      
+
       - name: JAR 파일 EC2에 전송
         uses: appleboy/scp-action@master
         with:
@@ -74,18 +36,15 @@ jobs:
           source: "hairgg/build/libs/hairgg-0.0.1-SNAPSHOT.jar"  # 정확한 파일 경로 지정
           target: "~/jar-file/"
 
-      - name: 파일을 ~/app-{태그}.jar로 이동
+      - name: 파일을 ~/app-{TAG_NAME}.jar로 이동
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            TAG_NAME="${GITHUB_REF#refs/tags/}"  # 'refs/tags/'를 제거하여 태그 이름만 추출
-            echo $TAG_NAME
-            echo TAG_NAME
-            echo "TAG_NAME: $TAG_NAME"  # 추출된 태그 이름 확인
-            mv ~/jar-file/hairgg/build/libs/hairgg-0.0.1-SNAPSHOT.jar ~/app-${{ github.ref_name }}.jar
+            echo "TAG_NAME: $TAG_NAME"
+            mv ~/jar-file/hairgg/build/libs/hairgg-0.0.1-SNAPSHOT.jar ~/app-${TAG_NAME}.jar
 
       # - name: Docker Compose 실행 (EC2 내부)
       #   uses: appleboy/ssh-action@master
