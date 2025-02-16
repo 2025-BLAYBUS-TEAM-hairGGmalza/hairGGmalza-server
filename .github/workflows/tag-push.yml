@@ -15,7 +15,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Git 태그 생성 및 푸시
-        id: create_tag
         run: |
           TAG_NAME="v$(date +'%Y%m%d%H%M%S')"  # 태그 이름 생성
           git tag $TAG_NAME
@@ -23,7 +22,6 @@ jobs:
           echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV  # 환경 변수에 태그 이름 저장
 
       - name: Output으로 태그 전달
-        id: output
         run: |
           echo "::set-output name=tag_name::${{ env.TAG_NAME }}"  # 출력으로 태그 전달
 
