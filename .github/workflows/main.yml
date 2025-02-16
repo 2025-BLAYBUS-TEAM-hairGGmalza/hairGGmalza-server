@@ -29,15 +29,15 @@ jobs:
 
       - name: Gradle 테스트 실행
         id: test
+        working-directory: hairgg
         run: |
-          pwd
-          ls -R
           set +e
-          chmod +x ./hairgg/gradlew
-          ./hairgg/gradlew test | tee test-results.log
+          chmod +x ./gradlew
+          ./gradlew test | tee test-results.log
           TEST_EXIT_CODE=${PIPESTATUS[0]}
           echo "TEST_RESULT=$(tail -n 10 test-results.log | base64 -w0)" >> $GITHUB_ENV
           exit $TEST_EXIT_CODE
+
 
       - name: 테스트 결과 Discord 전송
         uses: Ilshidur/action-discord@master
