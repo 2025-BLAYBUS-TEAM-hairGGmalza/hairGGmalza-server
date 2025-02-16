@@ -3,6 +3,7 @@ package hair.hairgg.designer.converter;
 import hair.hairgg.designer.domain.Designer;
 import hair.hairgg.designer.domain.DesignerMajor;
 import hair.hairgg.designer.domain.Major;
+import hair.hairgg.designer.dto.DesignerDto;
 import hair.hairgg.designer.dto.DesignerDto.DesignerInfo;
 import hair.hairgg.designer.dto.DesignerDto.DesignerInfos;
 import org.springframework.data.domain.Page;
@@ -41,5 +42,16 @@ public class DesignerConverter {
                 .isFirst(designers.isFirst())
                 .isLast(designers.isLast())
                 .build();
+    }
+
+    public static DesignerDto.DesignerInfobrief toDesignerInfobrief(Designer designer) {
+        return DesignerDto.DesignerInfobrief.builder()
+            .designerId(designer.getId())
+            .name(designer.getName())
+            .region(designer.getRegion())
+            .address(designer.getAddress())
+            .profile(designer.getProfile())
+            .description(designer.getDescription())
+            .build();
     }
 }

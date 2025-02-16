@@ -11,14 +11,19 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.FluentQuery;
 
-import hair.hairgg.reservation.Reservation;
+import hair.hairgg.reservation.domain.Reservation;
 import hair.hairgg.reservation.ReservationRepository;
-import hair.hairgg.reservation.ReservationState;
+import hair.hairgg.reservation.domain.ReservationState;
 
 public class MockReservationRepository implements ReservationRepository {
 	@Override
 	public List<Reservation> findByDesigner_IdAndReservationDateAndReservationStateIn(Long designerId,
 		LocalDateTime reservationDate, List<ReservationState> reservationStates) {
+		return List.of();
+	}
+
+	@Override
+	public List<Reservation> findByMember_IdOrderByReservationDate(Long memberId) {
 		return List.of();
 	}
 
