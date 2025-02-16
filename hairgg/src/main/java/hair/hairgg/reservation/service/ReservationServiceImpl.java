@@ -42,7 +42,7 @@ public class ReservationServiceImpl implements ReservationService {
 		return reservationRepository.save(newReservation);
 	}
 
-	@Transactional
+	@Transactional(readOnly = true)
 	public List<Reservation> getReservationByMemberId(Long memberId) {
 		return reservationRepository.findByMember_IdOrderByReservationDate(memberId);
 	}

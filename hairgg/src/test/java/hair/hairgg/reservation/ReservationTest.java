@@ -40,6 +40,11 @@ public class ReservationTest {
 		}
 
 		@Override
+		public List<Reservation> findByMember_IdOrderByReservationDate(Long memberId) {
+			return super.findByMember_IdOrderByReservationDate(memberId);
+		}
+
+		@Override
 		public <S extends Reservation> S save(S entity) {
 			return entity;
 		}
@@ -87,5 +92,17 @@ public class ReservationTest {
 		assertThatThrownBy(() -> {
 			reservationService.createReservation(request);
 		}).isInstanceOf(ReservationError.class);
+	}
+
+	@Test
+	void 예약조회(){
+		//given
+		Long memberId = 1L;
+
+		//when
+		List<Reservation> reservations = reservationService.getReservationByMemberId(memberId);
+
+		//then
+		assertThat(reservations).isNotNull();
 	}
 }

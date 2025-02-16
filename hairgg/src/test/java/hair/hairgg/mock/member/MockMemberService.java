@@ -13,4 +13,6 @@ public class MockMemberService implements MemberService {
 		}
 		throw new GeneralException(ErrorCode.MEMBER_NOT_FOUND);
 	}
+
+
 }
