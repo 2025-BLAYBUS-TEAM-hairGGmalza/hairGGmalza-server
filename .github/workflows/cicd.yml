@@ -3,7 +3,7 @@ name: CI/CD for Spring Boot
 on:
   push:
     tags:
-      - 'v*'  # 모든 태그
+      - 'v*'  # 모든 'v'로 시작하는 태그에 대해 실행
 
 permissions:
   contents: write  # 레포지토리 내용(코드 포함)에 대한 쓰기 권한
