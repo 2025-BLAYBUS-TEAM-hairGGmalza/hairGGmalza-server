@@ -2,7 +2,7 @@ name: CI/CD for Spring Boot
 
 on:
   workflow_run:
-    workflows: ["tag-push.yml"]  # 이전 워크플로우 이름
+    workflows: ["TagPush"]  # 이전 워크플로우 이름
     types:
       - completed
 
