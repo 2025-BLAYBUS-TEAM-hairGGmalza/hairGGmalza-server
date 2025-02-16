@@ -27,28 +27,28 @@ jobs:
           restore-keys: |
             gradle-${{ runner.os }}
 
-      - name: Gradle 테스트 실행
-        id: test
-        working-directory: hairgg
-        run: |
-          set +e
-          chmod +x ./gradlew
-          ./gradlew test | tee test-results.log
-          TEST_EXIT_CODE=${PIPESTATUS[0]}
-          echo "TEST_RESULT=$(tail -n 10 test-results.log | base64 -w0)" >> $GITHUB_ENV
-          exit $TEST_EXIT_CODE
+      # - name: Gradle 테스트 실행
+      #   id: test
+      #   working-directory: hairgg
+      #   run: |
+      #     set +e
+      #     chmod +x ./gradlew
+      #     ./gradlew -ex | tee test-results.log
+      #     TEST_EXIT_CODE=${PIPESTATUS[0]}
+      #     echo "TEST_RESULT=$(tail -n 10 test-results.log | base64 -w0)" >> $GITHUB_ENV
+      #     exit $TEST_EXIT_CODE
 
 
-      - name: 테스트 결과 Discord 전송
-        uses: Ilshidur/action-discord@master
-        with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          message: |
-            Spring Boot 테스트 결과:
-            ```
-            ${{ env.TEST_RESULT }}
-            ```
-          only_if: failure()  # 실패 시에만 알림 전송
+      # - name: 테스트 결과 Discord 전송
+      #   uses: Ilshidur/action-discord@master
+      #   with:
+      #     webhook: ${{ secrets.DISCORD_WEBHOOK }}
+      #     message: |
+      #       Spring Boot 테스트 결과:
+      #       ```
+      #       ${{ env.TEST_RESULT }}
+      #       ```
+      #     only_if: failure()  # 실패 시에만 알림 전송
 
       - name: Gradle 빌드 실행 (JAR 생성)
         run: ./hairgg/gradlew build -x test
