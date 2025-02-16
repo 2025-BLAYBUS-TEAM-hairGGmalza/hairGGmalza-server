@@ -54,17 +54,13 @@ jobs:
       #       ${{ env.TEST_RESULT }}
       #       ```
       #     only_if: failure()  # 실패 시에만 알림 전송
-      - name: Create and push Git tag
+      - name: Git 태그 생성 및 푸시
         run: |
           # Git 태그 생성 (버전 태그를 사용하거나 날짜 및 시간으로 고유 태그 생성)
           TAG_NAME="v$(date +'%Y%m%d%H%M%S')"  # 예: v20250216054030
           git tag $TAG_NAME
           git push origin $TAG_NAME
 
-      - name: Gradle 빌드 실행 (JAR 생성)
-        run: ./gradlew build -x test
-        working-directory: hairgg  # Gradle이 있는 디렉터리 지정
-      
       - name: JAR 파일 EC2에 전송
         uses: appleboy/scp-action@master
         with:
@@ -86,6 +82,7 @@ jobs:
             mv ~/jar-file/hairgg/build/libs/hairgg-0.0.1-SNAPSHOT.jar ~/app-${TAG_NAME}.jar
         env:
           GITHUB_REF: ${{ github.ref }}  # GITHUB_REF를 명시적으로 전달
+
 
       # - name: Docker Compose 실행 (EC2 내부)
       #   uses: appleboy/ssh-action@master
