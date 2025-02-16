@@ -1,65 +1,65 @@
-name: TagPush
+# name: TagPush
 
-on:
-  push:
-    branches:
-      - feat/cicd  # 특정 브랜치 지정
+# on:
+#   push:
+#     branches:
+#       - feat/cicd  # 특정 브랜치 지정
     
 
-permissions:
-  contents: write  # 레포지토리 내용(코드 포함)에 대한 쓰기 권한
-  actions: write  # GitHub Actions 실행 권한
-  packages: write
+# permissions:
+#   contents: write  # 레포지토리 내용(코드 포함)에 대한 쓰기 권한
+#   actions: write  # GitHub Actions 실행 권한
+#   packages: write
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout 코드 가져오기
-        uses: actions/checkout@v4
+#     steps:
+#       - name: Checkout 코드 가져오기
+#         uses: actions/checkout@v4
 
-      - name: JDK 21 설정
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '21'
+#       - name: JDK 21 설정
+#         uses: actions/setup-java@v3
+#         with:
+#           distribution: 'temurin'
+#           java-version: '21'
 
-      - name: Gradle 캐싱 설정 (선택 사항)
-        uses: actions/cache@v3
-        with:
-          path: ~/.gradle/caches
-          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            gradle-${{ runner.os }}
+#       - name: Gradle 캐싱 설정 (선택 사항)
+#         uses: actions/cache@v3
+#         with:
+#           path: ~/.gradle/caches
+#           key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+#           restore-keys: |
+#             gradle-${{ runner.os }}
 
-      # - name: Gradle 테스트 실행
-      #   id: test
-      #   working-directory: hairgg
-      #   run: |
-      #     set +e
-      #     chmod +x ./gradlew
-      #     ./gradlew -ex | tee test-results.log
-      #     TEST_EXIT_CODE=${PIPESTATUS[0]}
-      #     echo "TEST_RESULT=$(tail -n 10 test-results.log | base64 -w0)" >> $GITHUB_ENV
-      #     exit $TEST_EXIT_CODE
+#       # - name: Gradle 테스트 실행
+#       #   id: test
+#       #   working-directory: hairgg
+#       #   run: |
+#       #     set +e
+#       #     chmod +x ./gradlew
+#       #     ./gradlew -ex | tee test-results.log
+#       #     TEST_EXIT_CODE=${PIPESTATUS[0]}
+#       #     echo "TEST_RESULT=$(tail -n 10 test-results.log | base64 -w0)" >> $GITHUB_ENV
+#       #     exit $TEST_EXIT_CODE
 
 
-      # - name: 테스트 결과 Discord 전송
-      #   uses: Ilshidur/action-discord@master
-      #   with:
-      #     webhook: ${{ secrets.DISCORD_WEBHOOK }}
-      #     message: |
-      #       Spring Boot 테스트 결과:
-      #       ```
-      #       ${{ env.TEST_RESULT }}
-      #       ```
-      #     only_if: failure()  # 실패 시에만 알림 전송
-      - name: Create and push Git tag
-        run: |
-          TAG_NAME="v$(date +'%Y%m%d%H%M%S')"  # 태그 이름 생성
-          git tag $TAG_NAME
-          git push origin $TAG_NAME
-          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV  # 환경 변수에 태그 이름 저장
+#       # - name: 테스트 결과 Discord 전송
+#       #   uses: Ilshidur/action-discord@master
+#       #   with:
+#       #     webhook: ${{ secrets.DISCORD_WEBHOOK }}
+#       #     message: |
+#       #       Spring Boot 테스트 결과:
+#       #       ```
+#       #       ${{ env.TEST_RESULT }}
+#       #       ```
+#       #     only_if: failure()  # 실패 시에만 알림 전송
+#       - name: Create and push Git tag
+#         run: |
+#           TAG_NAME="v$(date +'%Y%m%d%H%M%S')"  # 태그 이름 생성
+#           git tag $TAG_NAME
+#           git push origin $TAG_NAME
+#           echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV  # 환경 변수에 태그 이름 저장
       
       
