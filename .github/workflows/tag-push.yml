@@ -2,8 +2,9 @@ name: CI/CD for Spring Boot
 
 on:
   push:
-    tags:
-      - 'v*'  # 모든 태그
+    branches:
+      - feat/cicd  # 특정 브랜치 지정
+    
 
 permissions:
   contents: write  # 레포지토리 내용(코드 포함)에 대한 쓰기 권한
@@ -60,48 +61,3 @@ jobs:
           TAG_NAME="v$(date +'%Y%m%d%H%M%S')"  # 예: v20250216054030
           git tag $TAG_NAME
           git push origin $TAG_NAME
-
-      - name: Gradle 빌드 실행 (JAR 생성)
-        run: ./gradlew build -x test
-        working-directory: hairgg  # Gradle이 있는 디렉터리 지정
-      
-      - name: JAR 파일 EC2에 전송
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          source: "hairgg/build/libs/hairgg-0.0.1-SNAPSHOT.jar"  # 정확한 파일 경로 지정
-          target: "~/jar-file/"
-
-      - name: 파일을 ~/app-{태그}.jar로 이동
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            TAG_NAME="${GITHUB_REF#refs/tags/}"  # 'refs/tags/'를 제거하여 태그 이름만 추출
-            echo $TAG_NAME
-            echo TAG_NAME
-            echo "TAG_NAME: $TAG_NAME"  # 추출된 태그 이름 확인
-            mv ~/jar-file/hairgg/build/libs/hairgg-0.0.1-SNAPSHOT.jar ~/app-${TAG_NAME}.jar
-        env:
-          GITHUB_REF: ${{ github.ref }}  # GITHUB_REF를 명시적으로 전달
-
-      # - name: Docker Compose 실행 (EC2 내부)
-      #   uses: appleboy/ssh-action@master
-      #   with:
-      #     host: ${{ secrets.EC2_HOST }}
-      #     username: ${{ secrets.EC2_USER }}
-      #     key: ${{ secrets.EC2_SSH_KEY }}
-      #     script: |
-      #       cd ~
-      #       docker-compose down
-      #       docker-compose up --build -d
-
-      # - name: 배포 성공 Discord 알림 전송
-      #   uses: Ilshidur/action-discord@master
-      #   with:
-      #     webhook: ${{ secrets.DISCORD_WEBHOOK }}
-      #     message: "✅ Spring Boot 배포 성공 🚀"
