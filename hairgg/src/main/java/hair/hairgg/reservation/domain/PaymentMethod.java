@@ -1,4 +1,4 @@
-package hair.hairgg.reservation;
+package hair.hairgg.reservation.domain;
 
 public enum PaymentMethod {
 	KAKAO_PAY,

@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import hair.hairgg.designer.domain.MeetingType;
@@ -13,6 +12,10 @@ import hair.hairgg.exception.custom.ReservationError;
 import hair.hairgg.mock.designer.MockDesignerService;
 import hair.hairgg.mock.member.MockMemberService;
 import hair.hairgg.mock.reservation.MockReservationRepository;
+import hair.hairgg.reservation.domain.Reservation;
+import hair.hairgg.reservation.domain.ReservationState;
+import hair.hairgg.reservation.service.ReservationService;
+import hair.hairgg.reservation.service.ReservationServiceImpl;
 
 public class ReservationTest {
 

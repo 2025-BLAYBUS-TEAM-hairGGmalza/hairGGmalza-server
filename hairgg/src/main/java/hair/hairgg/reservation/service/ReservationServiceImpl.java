@@ -1,4 +1,4 @@
-package hair.hairgg.reservation;
+package hair.hairgg.reservation.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,6 +13,11 @@ import hair.hairgg.exception.ErrorCode;
 import hair.hairgg.exception.custom.ReservationError;
 import hair.hairgg.member.Member;
 import hair.hairgg.member.MemberService;
+import hair.hairgg.reservation.ReservationConverter;
+import hair.hairgg.reservation.ReservationDto;
+import hair.hairgg.reservation.ReservationRepository;
+import hair.hairgg.reservation.domain.Reservation;
+import hair.hairgg.reservation.domain.ReservationState;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,19 +38,13 @@ public class ReservationServiceImpl implements ReservationService {
 		Member member = memberService.findById(request.memberId());
 		Designer designer = designerService.getDesignerById(request.designerId());
 		int price = designer.getPriceByMeetingType(request.meetingType());
-		//TODO: 더미값. 추후 디자이너 서비스 로직으로 변경
 		Reservation newReservation = ReservationConverter.toEntity(request, price, member, designer);
 		return reservationRepository.save(newReservation);
 	}
 
-	private int calculatePrice(ReservationDto.ReservationRequest request, Designer designer) {
-		if (request.meetingType() == MeetingType.ONLINE) {
-			return designer.getOnlinePrice();
-		}
-		if (request.meetingType() == MeetingType.OFFLINE) {
-			return designer.getOfflinePrice();
-		}
-		throw new ReservationError(ErrorCode.MEETING_TYPE_INVALID);
+	@Transactional
+	public List<Reservation> getReservationByMemberId(Long memberId) {
+		return reservationRepository.findByMember_IdOrderByReservationDate(memberId);
 	}
 
 	private void validate(ReservationDto.ReservationRequest request) {
