@@ -57,7 +57,8 @@ jobs:
       #     only_if: failure()  # 실패 시에만 알림 전송
       - name: Create and push Git tag
         run: |
-          # Git 태그 생성 (버전 태그를 사용하거나 날짜 및 시간으로 고유 태그 생성)
           TAG_NAME="v$(date +'%Y%m%d%H%M%S')"  # 예: v20250216054030
+          git add .
+          git commit -m "tag : $TAG_NAME"
           git tag $TAG_NAME
           git push origin $TAG_NAME
