@@ -1,5 +1,6 @@
 package hair.hairgg.designer.domain;
 
+import hair.hairgg.designer.repository.DesignerRepository;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
