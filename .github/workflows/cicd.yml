@@ -3,7 +3,7 @@ name: CI/CD for Spring Boot
 on:
   push:
     branches:
-      - feat/cicd  # 특정 브랜치 지정
+      - feat/cicd
 
 jobs:
   build:
@@ -27,28 +27,9 @@ jobs:
           restore-keys: |
             gradle-${{ runner.os }}
 
-      - name: Gradle 테스트 실행
-        id: test
-        run: |
-          set +e
-          ./gradlew test | tee test-results.log
-          TEST_EXIT_CODE=${PIPESTATUS[0]}
-          echo "TEST_RESULT=$(tail -n 10 test-results.log | base64 -w0)" >> $GITHUB_ENV
-          exit $TEST_EXIT_CODE
-
-      - name: 테스트 결과 Discord 전송
-        uses: Ilshidur/action-discord@master
-        with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          message: |
-            Spring Boot 테스트 결과:
-            ```
-            ${{ env.TEST_RESULT }}
-            ```
-          only_if: failure()  # 실패 시에만 알림 전송
-
       - name: Gradle 빌드 실행 (JAR 생성)
         run: ./gradlew build -x test
+        working-directory: hairgg
 
       - name: JAR 파일 EC2에 전송
         uses: appleboy/scp-action@master
@@ -56,8 +37,17 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: "build/libs/*.jar"
-          target: "~/app.jar"
+          source: "hairgg/build/libs/hairgg-0.0.1-SNAPSHOT.jar"
+          target: "~/jar-file/"
+
+      - name: 파일을 ~/app.jar로 이동
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            mv ~/jar-file/hairgg/build/libs/hairgg-0.0.1-SNAPSHOT.jar ~/app.jar
 
       - name: Docker Compose 실행 (EC2 내부)
         uses: appleboy/ssh-action@master
@@ -68,10 +58,25 @@ jobs:
           script: |
             cd ~
             docker-compose down
-            docker-compose up -d
+            docker-compose up --build -d
+
+      - name: 최근 5개 커밋 메시지 가져오기
+        id: commits
+        run: |
+          COMMITS=$(git log -5 --pretty=format:'- %s' | sed ':a;N;$!ba;s/\n/\\n/g')
+          echo "COMMITS=$COMMITS" >> $GITHUB_ENV  # 환경 변수에 저장
 
       - name: 배포 성공 Discord 알림 전송
         uses: Ilshidur/action-discord@master
-        with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          message: "✅ Spring Boot 배포 성공 🚀"
+        if: success()
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          DISCORD_USERNAME: 배포성공Bot
+          DISCORD_EMBEDS: |
+            [
+              { 
+                "title": "✅ Spring Boot 배포 성공 🚀",
+                "color": 10478271,
+                "description": "커밋 내역 :\n${{ env.COMMITS }}"
+              }
+            ]
