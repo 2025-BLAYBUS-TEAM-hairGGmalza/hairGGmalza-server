@@ -82,6 +82,8 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             TAG_NAME="${GITHUB_REF#refs/tags/}"  # 'refs/tags/'를 제거하여 태그 이름만 추출
+            echo $TAG_NAME
+            echo TAG_NAME
             echo "TAG_NAME: $TAG_NAME"  # 추출된 태그 이름 확인
             mv ~/jar-file/hairgg/build/libs/hairgg-0.0.1-SNAPSHOT.jar ~/app-${TAG_NAME}.jar
         env:
