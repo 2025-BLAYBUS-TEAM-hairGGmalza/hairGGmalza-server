@@ -30,6 +30,8 @@ jobs:
       - name: Gradle 테스트 실행
         id: test
         run: |
+          pwd
+          ls -R
           set +e
           chmod +x ./hairgg/gradlew
           ./hairgg/gradlew test | tee test-results.log
