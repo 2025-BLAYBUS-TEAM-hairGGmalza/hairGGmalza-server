@@ -5,6 +5,11 @@ on:
     branches:
       - feat/cicd
 
+permissions:
+  contents: write  # 레포지토리 내용(코드 포함)에 대한 쓰기 권한
+  actions: write  # GitHub Actions 실행 권한
+  packages: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
