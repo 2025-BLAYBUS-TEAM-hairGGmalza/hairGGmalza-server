@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 
 
 import hair.hairgg.designer.domain.MeetingType;
+import hair.hairgg.designer.dto.DesignerDto;
+import hair.hairgg.reservation.domain.ReservationState;
 import jakarta.validation.constraints.NotNull;
 
 public class ReservationDto{
@@ -23,6 +25,15 @@ public class ReservationDto{
 		Long id,
 		Long memberId,
 		Long designerId,
+		ReservationState state,
+		MeetingType meetingType,
+		int price,
+		LocalDateTime reservationDate
+	){}
+
+	public record ReservationDetailInfo(
+		Long id,
+		DesignerDto.DesignerInfobrief designer,
 		ReservationState state,
 		MeetingType meetingType,
 		int price,

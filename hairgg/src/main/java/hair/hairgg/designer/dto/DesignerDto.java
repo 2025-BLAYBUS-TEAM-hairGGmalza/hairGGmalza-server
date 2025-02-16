@@ -34,4 +34,15 @@ public class DesignerDto {
             Boolean isLast
     ) {
     }
+
+    @Builder
+    public record DesignerInfobrief(
+            Long designerId,
+            String name,
+            Region region,
+            String address,
+            String profile,
+            String description
+    ) {
+    }
 }
