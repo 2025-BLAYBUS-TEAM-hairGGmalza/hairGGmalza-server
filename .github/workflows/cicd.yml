@@ -5,6 +5,11 @@ on:
     branches:
       - feat/cicd  # 특정 브랜치 지정
 
+permissions:
+  contents: write  # 레포지토리 내용(코드 포함)에 대한 쓰기 권한
+  actions: write  # GitHub Actions 실행 권한
+  packages: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -12,8 +17,6 @@ jobs:
     steps:
       - name: Checkout 코드 가져오기
         uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GH_TOKEN }}
 
       - name: JDK 21 설정
         uses: actions/setup-java@v3
