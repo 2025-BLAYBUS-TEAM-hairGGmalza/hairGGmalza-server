@@ -16,14 +16,9 @@ jobs:
     steps:
       - name: Git 태그 생성 및 푸시
         run: |
-          TAG_NAME="v$(date +'%Y%m%d%H%M%S')"  # 태그 이름 생성
+          TAG_NAME="v$(date +'%Y%m%d%H%M%S')" 
           git tag $TAG_NAME
           git push origin $TAG_NAME
-          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV  # 환경 변수에 태그 이름 저장
-
       - name: Output으로 태그 전달
-        run: |
-          echo "::set-output name=tag_name::${{ env.TAG_NAME }}"  # 출력으로 태그 전달
-
-    outputs:
-      tag_name: ${{ steps.output.outputs.tag_name }}  # tag_name 출력
+        id: output
+        run: echo "TAG_NAME=v$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
