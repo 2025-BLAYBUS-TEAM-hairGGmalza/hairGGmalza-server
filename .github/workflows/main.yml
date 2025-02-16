@@ -31,7 +31,7 @@ jobs:
         id: test
         run: |
           set +e
-          chmod +x ./gradlew
+          chmod +x ./hairgg/gradlew
           ./hairgg/gradlew test | tee test-results.log
           TEST_EXIT_CODE=${PIPESTATUS[0]}
           echo "TEST_RESULT=$(tail -n 10 test-results.log | base64 -w0)" >> $GITHUB_ENV
