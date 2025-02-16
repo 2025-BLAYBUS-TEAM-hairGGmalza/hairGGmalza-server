@@ -70,18 +70,18 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            mv ~/jar-file/hairgg/build/libs/hairgg-0.0.1-SNAPSHOT.jar ~/app2.jar
+            mv ~/jar-file/hairgg/build/libs/hairgg-0.0.1-SNAPSHOT.jar ~/app.jar
 
-      # - name: Docker Compose 실행 (EC2 내부)
-      #   uses: appleboy/ssh-action@master
-      #   with:
-      #     host: ${{ secrets.EC2_HOST }}
-      #     username: ${{ secrets.EC2_USER }}
-      #     key: ${{ secrets.EC2_SSH_KEY }}
-      #     script: |
-      #       cd ~
-      #       docker-compose down
-      #       docker-compose up -d
+      - name: Docker Compose 실행 (EC2 내부)
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd ~
+            docker-compose down
+            docker-compose up -d
 
       # - name: 배포 성공 Discord 알림 전송
       #   uses: Ilshidur/action-discord@master
