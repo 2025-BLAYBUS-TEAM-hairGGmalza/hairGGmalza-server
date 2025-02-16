@@ -53,15 +53,24 @@ jobs:
       - name: Gradle 빌드 실행 (JAR 생성)
         run: ./gradlew build -x test
         working-directory: hairgg  # Gradle이 있는 디렉터리 지정
-
-      - name: Save SSH key to file
-        run: echo "${{ secrets.EC2_SSH_KEY }}" > /tmp/ssh_key.pem
-
+      
       - name: JAR 파일 EC2에 전송
-        run: |
-          chmod 600 /tmp/ssh_key.pem
-          scp -i /tmp/ssh_key.pem hairgg/build/libs/hairgg-0.0.1-SNAPSHOT.jar ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:~/app.jar
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "hairgg/build/libs/hairgg-0.0.1-SNAPSHOT.jar"  # 정확한 파일 경로 지정
+          target: "~/jar-file/"
 
+      - name: 파일을 ~/app.jar로 이동
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            mv ~/jar-file/hairgg-0.0.1-SNAPSHOT.jar ~/app2.jar
 
       # - name: Docker Compose 실행 (EC2 내부)
       #   uses: appleboy/ssh-action@master
