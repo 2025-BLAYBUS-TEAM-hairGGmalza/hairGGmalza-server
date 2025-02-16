@@ -85,9 +85,7 @@ jobs:
             echo $TAG_NAME
             echo TAG_NAME
             echo "TAG_NAME: $TAG_NAME"  # 추출된 태그 이름 확인
-            mv ~/jar-file/hairgg/build/libs/hairgg-0.0.1-SNAPSHOT.jar ~/app-${TAG_NAME}.jar
-        env:
-          GITHUB_REF: ${{ github.ref }}  # GITHUB_REF를 명시적으로 전달
+            mv ~/jar-file/hairgg/build/libs/hairgg-0.0.1-SNAPSHOT.jar ~/app-${{ github.ref_name }}.jar
 
       # - name: Docker Compose 실행 (EC2 내부)
       #   uses: appleboy/ssh-action@master
