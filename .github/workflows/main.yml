@@ -54,6 +54,9 @@ jobs:
         run: ./gradlew build -x test
         working-directory: hairgg  # Gradle이 있는 디렉터리 지정
 
+      - name: 빌드 파일 확인
+        run: ls -R hairgg/build/libs
+
 
       - name: JAR 파일 EC2에 전송
         uses: appleboy/scp-action@master
