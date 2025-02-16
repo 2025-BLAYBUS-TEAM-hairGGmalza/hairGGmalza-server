@@ -32,7 +32,8 @@ public class ReservationServiceImpl implements ReservationService {
 		//디자이너의 가격 가져옴 디자이너 서비스 로직 가져올 것
 		Member member = memberService.findById(request.memberId());
 		Designer designer = designerService.getDesignerById(request.designerId());
-		int price = designer.getPriceByMeetingType(request.meetingType());
+//		int price = designer.getPriceByMeetingType(request.meetingType());
+		int price = 1;
 		//TODO: 더미값. 추후 디자이너 서비스 로직으로 변경
 		Reservation newReservation = ReservationConverter.toEntity(request, price, member, designer);
 		return reservationRepository.save(newReservation);
