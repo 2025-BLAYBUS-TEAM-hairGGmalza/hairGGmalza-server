@@ -1,40 +1,117 @@
 package hair.hairgg.designer.service;
 
 import hair.hairgg.designer.domain.*;
-import hair.hairgg.designer.repository.DesignerMajorRepository;
-import hair.hairgg.designer.repository.DesignerRepository;
-import hair.hairgg.designer.repository.MajorRepository;
+import hair.hairgg.mock.designer.MockDesignerRepository;
+import hair.hairgg.mock.designerMajor.MockDesignerMajorRepository;
+import hair.hairgg.mock.major.MockMajorRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+
+import java.lang.reflect.Field;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@SpringBootTest
-@Transactional
 class DesignerServiceImplTest {
 
-    @Autowired
-    private DesignerService designerService;
+    MyMockDesignerRepository designerRepository;
+    MyMockMajorRepository majorRepository;
+    MyMockDesignerMajorRepository designerMajorRepository;
+    DesignerService designerService;
 
-    @Autowired
-    private DesignerRepository designerRepository;
+    private static class MyMockDesignerRepository extends MockDesignerRepository {
 
-    @Autowired
-    private DesignerMajorRepository designerMajorRepository;
+        private final Map<Long, Designer> database = new HashMap<>();
+        private long sequence = 1L;
 
-    @Autowired
-    private MajorRepository majorRepository;
+        @Override
+        public <S extends Designer> S save(S entity) {
+            if (entity.getId() == null) {
+                setPrivateField(entity, "id", sequence++);
+            }
+            database.put(entity.getId(), entity);
+            return entity;
+        }
+
+        @Override
+        public Optional<Designer> findById(Long id) {
+            return Optional.ofNullable(database.get(id));
+        }
+
+        @Override
+        public Page<Designer> findAll(Pageable pageable) {
+            List<Designer> allDesigners = new ArrayList<>(database.values());
+
+            int start = (int) pageable.getOffset();
+            int end = Math.min((start + pageable.getPageSize()), allDesigners.size());
+
+            List<Designer> pagedList = allDesigners.stream()
+                    .skip(start)
+                    .limit(pageable.getPageSize())
+                    .collect(Collectors.toList());
+
+            return new PageImpl<>(pagedList, pageable, allDesigners.size());
+        }
+    }
+
+    private static class MyMockMajorRepository extends MockMajorRepository {
+
+        private final Map<Long, Major> database = new HashMap<>();
+        private long sequence = 1L;
+
+        @Override
+        public <S extends Major> S save(S entity) {
+            if (entity.getId() == null) {
+                setPrivateField(entity, "id", sequence++);
+            }
+            database.put(entity.getId(), entity);
+            return entity;
+        }
+    }
+
+    private static class MyMockDesignerMajorRepository extends MockDesignerMajorRepository {
+
+        private final Map<Long, DesignerMajor> database = new HashMap<>();
+        private long sequence = 1L;
+
+        @Override
+        public <S extends DesignerMajor> S save(S entity) {
+            if (entity.getId() == null) {
+                setPrivateField(entity, "id", sequence++);
+            }
+            database.put(entity.getId(), entity);
+            return entity;
+        }
+    }
+
+    private static void setPrivateField(Object target, String fieldName, Object value) {
+        try {
+            Field field = target.getClass().getDeclaredField(fieldName);
+            field.setAccessible(true);
+            field.set(target, value);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new RuntimeException("ID 자동 할당 실패", e);
+        }
+    }
+
+    @BeforeEach
+    void setUp() {
+        designerRepository = new MyMockDesignerRepository();
+        majorRepository = new MyMockMajorRepository();
+        designerMajorRepository = new MyMockDesignerMajorRepository();
+        designerService = new DesignerServiceImpl(designerRepository, designerMajorRepository);
+    }
 
     @Test
-    void getDesignerById() {
+    void Id로_디자이너_조회() {
         Major major1 = Major.builder()
                 .name("펌")
                 .build();
-        Major savedMajor1 = majorRepository.save(major1);
 
         Designer newDesigner = Designer.builder()
                 .name("사용자")
@@ -48,7 +125,7 @@ class DesignerServiceImplTest {
                 .build();
 
         DesignerMajor designerMajor = DesignerMajor.builder()
-                .major(savedMajor1)
+                .major(major1)
                 .build();
 
         newDesigner.addDesignerMajor(designerMajor);
@@ -60,7 +137,7 @@ class DesignerServiceImplTest {
         assertNotNull(designer);
         assertEquals(savedDesigner, designer);
         assertNotNull(designer.getDesignerMajors());
-        assertEquals(savedMajor1, designer.getDesignerMajors().getFirst().getMajor());
+        assertEquals(major1, designer.getDesignerMajors().getFirst().getMajor());
     }
 
     @Test
