@@ -51,7 +51,9 @@ jobs:
       #     only_if: failure()  # 실패 시에만 알림 전송
 
       - name: Gradle 빌드 실행 (JAR 생성)
-        run: ./hairgg/gradlew build -x test
+        run: ./gradlew build -x test
+        working-directory: hairgg  # Gradle이 있는 디렉터리 지정
+
 
       - name: JAR 파일 EC2에 전송
         uses: appleboy/scp-action@master
