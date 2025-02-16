@@ -81,10 +81,11 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            echo "GITHUB_REF: $GITHUB_REF"  # GITHUB_REF 확인
-            TAG_NAME=${GITHUB_REF#refs/tags/}  # 'refs/tags/'를 제거하여 태그 이름만 추출
+            TAG_NAME="${GITHUB_REF#refs/tags/}"  # 'refs/tags/'를 제거하여 태그 이름만 추출
             echo "TAG_NAME: $TAG_NAME"  # 추출된 태그 이름 확인
             mv ~/jar-file/hairgg/build/libs/hairgg-0.0.1-SNAPSHOT.jar ~/app-${TAG_NAME}.jar
+        env:
+          GITHUB_REF: ${{ github.ref }}  # GITHUB_REF를 명시적으로 전달
 
       # - name: Docker Compose 실행 (EC2 내부)
       #   uses: appleboy/ssh-action@master
