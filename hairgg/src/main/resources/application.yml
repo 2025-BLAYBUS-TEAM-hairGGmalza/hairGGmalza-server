@@ -11,3 +11,21 @@ spring:
       ddl-auto: update
     show-sql: true
 
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id:
+            client-secret:
+            scope: profile, email
+            redirect-uri: "http://localhost:8080/loginAuth"
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+            user-name-attribute: sub
+
+jwt:
+  secret: "irFIRZR/CjAkHf7h58YprXJ8fStj0P9iP43fEVpJCAE="
