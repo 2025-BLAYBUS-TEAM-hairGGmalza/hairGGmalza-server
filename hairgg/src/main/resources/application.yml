@@ -28,4 +28,4 @@ spring:
             user-name-attribute: sub
 
 jwt:
-  secret: "irFIRZR/CjAkHf7h58YprXJ8fStj0P9iP43fEVpJCAE="
+  secret:
