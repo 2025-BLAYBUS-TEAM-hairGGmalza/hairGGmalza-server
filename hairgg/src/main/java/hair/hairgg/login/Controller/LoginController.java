@@ -18,16 +18,13 @@ public class LoginController {
     private final MemberRepository memberRepository;
     private final JwtUtil jwtUtil;
 
-    @GetMapping("/login")
+    @PostMapping("/login")
     public ResponseEntity<?> googleLogin(@RequestParam("code") String code, @RequestHeader("User-Agent") String userAgent) {
 
-        System.out.println("code1: "+code);
-        System.out.println("User-Agent: " + userAgent);
         String accessToken = loginService.getGoogleAccessToken(code);
-        System.out.println("accessToken: "+accessToken);
 
         Member userInfo = loginService.getUserInfo(accessToken);
-        System.out.println("userInfo: "+userInfo);
+
         String email = userInfo.getLoginId();
         String name = userInfo.getName();
         String profileUrl = userInfo.getProfileUrl();
@@ -37,11 +34,9 @@ public class LoginController {
         if (existingMember.isPresent()) {
 
             String token = jwtUtil.generateToken(email);
-            System.out.println("token: "+token);
-
-            return ResponseEntity.ok().body(Map.of("token", token, "redirect", "/home"));
+            return ResponseEntity.ok().body(Map.of("token", token, "isFirstLogin", "false"));
         } else {
-            String redirectUrl = String.format("/signup?email=%s&name=%s&profileUrl=%s",
+            String redirectUrl = String.format("/signup?email=%s&name=%s&profileUrl=%s&isFirstLogin=true",
                     email,
                     name,
                     profileUrl
@@ -56,6 +51,6 @@ public class LoginController {
         memberRepository.save(member);
 
         String token = jwtUtil.generateToken(member.getLoginId());
-        return ResponseEntity.ok().body(Map.of("token", token, "redirect", "/home"));
+        return ResponseEntity.ok().body(Map.of("token", token, "isFirstLogin", "false"));
     }
 }
