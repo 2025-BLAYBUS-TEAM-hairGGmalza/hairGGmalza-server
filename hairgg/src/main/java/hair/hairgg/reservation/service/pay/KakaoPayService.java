@@ -3,6 +3,7 @@ package hair.hairgg.reservation.service.pay;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -17,28 +18,27 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class KakaoPayService implements PayService {
 
-	private static final String TEST_CID = "TC0ONETIME";
-	private static final String SECRET_KEY = "DEVF0DCC87ADBAAC86BC82BC175BE564ECF4DD96";
-
 	private static final String readyUrl = "https://open-api.kakaopay.com/online/v1/payment/ready";
 	private static final String approveUrl = "https://open-api.kakaopay.com/online/v1/payment/approve";
+
+	@Autowired
+	private KakaoPayConfig kakaoPayConfig;
 
 	@Override
 	public PayInfo.PayReadyInfo payReady(Reservation reservation) {
 		log.info("KakaoPayService payReady");
 
 		Map<String, String> kakaoParameters = new HashMap<>();
-		kakaoParameters.put("cid", TEST_CID);
+		kakaoParameters.put("cid", kakaoPayConfig.getCid());
 		kakaoParameters.put("partner_order_id", String.valueOf(reservation.getId()));
 		kakaoParameters.put("partner_user_id", String.valueOf(reservation.getMember().getId()));
 		kakaoParameters.put("item_name", "헤어 컨설팅 예약");
 		kakaoParameters.put("quantity", "1");
 		kakaoParameters.put("total_amount", String.valueOf(reservation.getPrice()));
 		kakaoParameters.put("tax_free_amount", "0");
-		kakaoParameters.put("approval_url",
-			"http://localhost:8080/reservation/" + reservation.getId() + "/pay/completed");
-		kakaoParameters.put("cancel_url", "http://localhost:8080/reservation/" + reservation.getId() + "/pay/cancel");
-		kakaoParameters.put("fail_url", "http://localhost:8080/reservation/" + reservation.getId() + "/pay/fail");
+		kakaoParameters.put("approval_url", kakaoPayConfig.getApprovalUrl(reservation.getId()));
+		kakaoParameters.put("cancel_url", kakaoPayConfig.getCancelUrl(reservation.getId()));
+		kakaoParameters.put("fail_url", kakaoPayConfig.getFailUrl(reservation.getId()));
 
 		HttpEntity<Map<String, String>> entity = new HttpEntity<>(kakaoParameters, this.getHeaders());
 
@@ -56,7 +56,7 @@ public class KakaoPayService implements PayService {
 		log.info("KakaoPayService payApprove");
 
 		Map<String, String> kakaoParameters = new HashMap<>();
-		kakaoParameters.put("cid", TEST_CID);
+		kakaoParameters.put("cid", kakaoPayConfig.getCid());
 		kakaoParameters.put("tid", String.valueOf(reservation.getTid()));
 		kakaoParameters.put("partner_order_id", String.valueOf(reservation.getId()));
 		kakaoParameters.put("partner_user_id", String.valueOf(reservation.getMember().getId()));
@@ -75,7 +75,7 @@ public class KakaoPayService implements PayService {
 
 	private HttpHeaders getHeaders() {
 		HttpHeaders headers = new HttpHeaders();
-		headers.set("Authorization", "SECRET_KEY " + SECRET_KEY);
+		headers.set("Authorization", "SECRET_KEY " + kakaoPayConfig.getSecretKey());
 		headers.set("Content-Type", "application/json");
 
 		return headers;
