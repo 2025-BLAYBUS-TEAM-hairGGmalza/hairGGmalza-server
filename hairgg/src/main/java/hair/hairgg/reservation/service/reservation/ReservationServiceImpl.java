@@ -63,6 +63,7 @@ public class ReservationServiceImpl implements ReservationService {
 		return reservationRepository.save(reservation);
 	}
 
+	@Transactional
 	@Override
 	public Reservation payCancel(Long reservationId) {
 		Reservation reservation = reservationRepository.findById(reservationId)

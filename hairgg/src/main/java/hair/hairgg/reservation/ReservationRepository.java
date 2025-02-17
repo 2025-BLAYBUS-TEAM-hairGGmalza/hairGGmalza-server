@@ -20,8 +20,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
 	@Query("SELECT r "
 		+ "FROM Reservation r "
-		+ "JOIN FETCH r.designer d "
-		+ "JOIN FETCH d.designerMajors "
+		+ "LEFT JOIN FETCH r.designer d "
+		+ "LEFT JOIN FETCH d.designerMajors "
 		+ "WHERE r.member.id = :memberId "
 		+ "ORDER BY r.reservationDate")
 	List<Reservation> findByMember_IdOrderByReservationDate(@Param("memberId") Long memberId);
