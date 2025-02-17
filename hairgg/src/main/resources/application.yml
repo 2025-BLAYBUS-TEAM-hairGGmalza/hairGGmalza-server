@@ -20,6 +20,12 @@ spring:
       platform: mysql
       encoding: UTF-8
 
+kakao:
+  pay:
+    base-url: http://localhost:8080
+    secret-key: DEVF0DCC87ADBAAC86BC82BC175BE564ECF4DD96
+    cid: TC0ONETIME
+
 server:
   port: 8080
   servlet:
