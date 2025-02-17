@@ -28,6 +28,12 @@ public class MockReservationRepository implements ReservationRepository {
 	}
 
 	@Override
+	public List<LocalDateTime> findReservationDateByDesignerIdAndReservationDateBetween(Long designerId,
+		LocalDateTime start, LocalDateTime end) {
+		return List.of();
+	}
+
+	@Override
 	public void flush() {
 
 	}
