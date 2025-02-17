@@ -1,13 +1,14 @@
 package hair.hairgg.reservation.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import hair.hairgg.designer.domain.Designer;
-import hair.hairgg.designer.domain.MeetingType;
 import hair.hairgg.designer.service.DesignerService;
 import hair.hairgg.exception.ErrorCode;
 import hair.hairgg.exception.custom.ReservationError;
@@ -33,7 +34,7 @@ public class ReservationServiceImpl implements ReservationService {
 	@Transactional
 	@Override
 	public Reservation createReservation(ReservationDto.ReservationRequest request) {
-		validate(request);
+		validateCreateReservation(request);
 		//디자이너의 가격 가져옴 디자이너 서비스 로직 가져올 것
 		Member member = memberService.findById(request.memberId());
 		Designer designer = designerService.getDesignerById(request.designerId());
@@ -44,10 +45,33 @@ public class ReservationServiceImpl implements ReservationService {
 
 	@Transactional(readOnly = true)
 	public List<Reservation> getReservationByMemberId(Long memberId) {
+		//TODO:member 있는지 확인 필요
 		return reservationRepository.findByMember_IdOrderByReservationDate(memberId);
 	}
 
-	private void validate(ReservationDto.ReservationRequest request) {
+	@Transactional(readOnly = true)
+	public List<LocalTime> getValidTimes(Long designerId, LocalDate reservationDate) {
+		validateGetValidTimes(designerId, reservationDate);
+		List<LocalDateTime> reservatedTimes=reservationRepository.findReservationDateByDesignerIdAndReservationDateBetween(designerId, reservationDate.atTime(10,0), reservationDate.atTime(20,0));
+		return ValidTimeManager.getValidTimes(reservatedTimes);
+
+	}
+
+	private void validateGetValidTimes(Long designerId, LocalDate reservationDate) {
+		if (reservationDate.isBefore(LocalDate.now())) {
+			throw new ReservationError(ErrorCode.RESERVATION_TIME_PAST);
+		}
+		if (reservationDate.isEqual(LocalDate.now())) {
+			if (LocalTime.now().isAfter(LocalTime.of(20, 0))) {
+				throw new ReservationError(ErrorCode.RESERVATION_TIME_PAST);
+			}
+		}
+		if (reservationDate.isAfter(LocalDate.now().plusDays(90))) {
+			throw new ReservationError(ErrorCode.RESERVATION_TIME_TOO_FAR);
+		}
+	}
+
+	private void validateCreateReservation(ReservationDto.ReservationRequest request) {
 		LocalDateTime reservationTime = request.reservationDate();
 		Long designerId = request.designerId();
 		if (!isValidTime(request.reservationDate())) {

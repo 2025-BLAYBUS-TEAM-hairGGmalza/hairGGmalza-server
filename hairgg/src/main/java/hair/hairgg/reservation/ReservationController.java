@@ -1,8 +1,12 @@
 package hair.hairgg.reservation;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,4 +38,12 @@ public class ReservationController {
 		List<Reservation> reservations = reservationService.getReservationByMemberId(memberId);
 		return ApiResponse.success("예약 조회 성공",ReservationConverter.toReservationDetailInfoList(reservations));
 	}
+
+	@GetMapping("/designer/{designerId}/valid-time")
+	public ApiResponse<List<LocalTime>> getValidTimes(@PathVariable Long designerId,
+		@RequestParam LocalDate reservationDate) {
+		List<LocalTime> validTimes = reservationService.getValidTimes(designerId,reservationDate);
+		return ApiResponse.success("예약 가능 날짜 조회 성공", validTimes);
+	}
+
 }
