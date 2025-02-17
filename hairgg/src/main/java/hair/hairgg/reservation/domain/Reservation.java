@@ -7,6 +7,7 @@ import hair.hairgg.designer.domain.MeetingType;
 import hair.hairgg.exception.ErrorCode;
 import hair.hairgg.exception.custom.ReservationError;
 import hair.hairgg.member.Member;
+import hair.hairgg.reservation.domain.pay.PaymentMethod;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -25,41 +26,56 @@ import lombok.RequiredArgsConstructor;
 @AllArgsConstructor
 @Getter
 public class Reservation {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "reservationId")
-    private long id;
-    @Column(nullable = false)
-    private LocalDateTime reservationDate;
-    @Column(nullable = false)
-    private ReservationState reservationState;
-    @Column(nullable = false)
-    private MeetingType meetingType;
-    @Column(nullable = false)
-    private int price;
-    @Column
-    private LocalDateTime paymentAt;
-    @Column
-    private PaymentMethod paymentMethod;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "reservationId")
+	private long id;
+	@Column(nullable = false)
+	private LocalDateTime reservationDate;
+	@Column(nullable = false)
+	private ReservationState reservationState;
+	@Column(nullable = false)
+	private MeetingType meetingType;
+	@Column(nullable = false)
+	private int price;
+	@Column
+	private LocalDateTime paymentAt;
+	@Column
+	private PaymentMethod paymentMethod;
+	@Column
+	private String tid;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "designerId")
+	private Designer designer;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "memberId")
+	private Member member;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "designerId")
-    private Designer designer;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "memberId")
-    private Member member;
-
-    @Builder
-    public Reservation(LocalDateTime reservationDate, MeetingType meetingType,Designer designer, Member member,int price) {
-        if (reservationDate == null||meetingType==null||designer==null||member==null) {
-            throw new ReservationError(ErrorCode.INVALID_INPUT_VALUE);
-        }
-        this.reservationDate = reservationDate;
+	@Builder
+	public Reservation(LocalDateTime reservationDate, MeetingType meetingType, Designer designer, Member member,
+		int price) {
+		if (reservationDate == null || meetingType == null || designer == null || member == null) {
+			throw new ReservationError(ErrorCode.INVALID_INPUT_VALUE);
+		}
+		this.reservationDate = reservationDate;
 		this.meetingType = meetingType;
-        this.price = price;
+		this.price = price;
 		this.designer = designer;
-        this.member = member;
-        this.reservationState = ReservationState.WAITING;
-    }
+		this.member = member;
+		this.reservationState = ReservationState.WAITING;
+	}
+
+	public void changeState(ReservationState state) {
+		this.reservationState = state;
+	}
+
+	public void updatePaymentInfo(LocalDateTime approvedAt) {
+		this.paymentAt = approvedAt;
+		paymentMethod = PaymentMethod.KAKAO_PAY;
+	}
+
+	public void updateTid(String tid) {
+		this.tid = tid;
+	}
 }

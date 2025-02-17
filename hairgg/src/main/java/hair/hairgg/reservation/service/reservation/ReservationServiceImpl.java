@@ -1,4 +1,4 @@
-package hair.hairgg.reservation.service;
+package hair.hairgg.reservation.service.reservation;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -15,10 +15,14 @@ import hair.hairgg.exception.custom.ReservationError;
 import hair.hairgg.member.Member;
 import hair.hairgg.member.MemberService;
 import hair.hairgg.reservation.ReservationConverter;
-import hair.hairgg.reservation.ReservationDto;
+import hair.hairgg.reservation.ReservationReqDto;
 import hair.hairgg.reservation.ReservationRepository;
+import hair.hairgg.reservation.ReservationResDto;
 import hair.hairgg.reservation.domain.Reservation;
 import hair.hairgg.reservation.domain.ReservationState;
+import hair.hairgg.reservation.service.ValidTimeManager;
+import hair.hairgg.reservation.service.pay.PayInfo;
+import hair.hairgg.reservation.service.pay.PayService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,19 +32,47 @@ import lombok.extern.slf4j.Slf4j;
 public class ReservationServiceImpl implements ReservationService {
 
 	private final ReservationRepository reservationRepository;
+	private final PayService payService;
 	private final MemberService memberService;
 	private final DesignerService designerService;
 
 	@Transactional
 	@Override
-	public Reservation createReservation(ReservationDto.ReservationRequest request) {
+	public PayInfo.PayReadyInfo createReservation(ReservationReqDto.ReservationRequest request) {
 		validateCreateReservation(request);
-		//디자이너의 가격 가져옴 디자이너 서비스 로직 가져올 것
 		Member member = memberService.findById(request.memberId());
 		Designer designer = designerService.getDesignerById(request.designerId());
 		int price = designer.getPriceByMeetingType(request.meetingType());
 		Reservation newReservation = ReservationConverter.toEntity(request, price, member, designer);
-		return reservationRepository.save(newReservation);
+		reservationRepository.save(newReservation);
+		PayInfo.PayReadyInfo payInfo = payService.payReady(newReservation);
+		newReservation.updateTid(payInfo.tid());
+		reservationRepository.save(newReservation);
+		return payInfo;
+	}
+
+	@Transactional
+	@Override
+	public Reservation payApprove(Long reservationId, String pgToken) {
+		Reservation reservation = reservationRepository.findById(reservationId)
+			.orElseThrow(() -> new ReservationError(ErrorCode.RESERVATION_NOT_FOUND));
+		PayInfo.PayApproveInfo payInfo = payService.payApprove(reservation, pgToken);
+		// 예약 상태 변경
+		reservation.updatePaymentInfo(payInfo.approved_at());
+		reservation.changeState(ReservationState.PAYMENT_COMPLETED);
+		return reservationRepository.save(reservation);
+	}
+
+	@Transactional
+	@Override
+	public Reservation payCancel(Long reservationId) {
+		Reservation reservation = reservationRepository.findById(reservationId)
+			.orElseThrow(() -> new ReservationError(ErrorCode.RESERVATION_NOT_FOUND));
+		if(reservation.getReservationState()==ReservationState.CANCELED){
+			return reservation;
+		}
+		reservation.changeState(ReservationState.CANCELED);
+		return reservationRepository.save(reservation);
 	}
 
 	@Transactional(readOnly = true)
@@ -51,13 +83,15 @@ public class ReservationServiceImpl implements ReservationService {
 
 	@Transactional(readOnly = true)
 	public List<LocalTime> getValidTimes(Long designerId, LocalDate reservationDate) {
-		validateGetValidTimes(designerId, reservationDate);
-		List<LocalDateTime> reservatedTimes=reservationRepository.findReservationDateByDesignerIdAndReservationDateBetween(designerId, reservationDate.atTime(10,0), reservationDate.atTime(20,0));
+		validateValidTimes(designerId, reservationDate);
+		List<LocalDateTime> reservatedTimes = reservationRepository.findReservationDateByDesignerIdAndReservationStateAndReservationDateBetween(
+			designerId, ReservationState.CANCELED,reservationDate.atTime(10, 0), reservationDate.atTime(20, 0));
 		return ValidTimeManager.getValidTimes(reservatedTimes);
 
 	}
 
-	private void validateGetValidTimes(Long designerId, LocalDate reservationDate) {
+
+	private void validateValidTimes(Long designerId, LocalDate reservationDate) {
 		if (reservationDate.isBefore(LocalDate.now())) {
 			throw new ReservationError(ErrorCode.RESERVATION_TIME_PAST);
 		}
@@ -71,7 +105,7 @@ public class ReservationServiceImpl implements ReservationService {
 		}
 	}
 
-	private void validateCreateReservation(ReservationDto.ReservationRequest request) {
+	private void validateCreateReservation(ReservationReqDto.ReservationRequest request) {
 		LocalDateTime reservationTime = request.reservationDate();
 		Long designerId = request.designerId();
 		if (!isValidTime(request.reservationDate())) {
@@ -91,8 +125,8 @@ public class ReservationServiceImpl implements ReservationService {
 	}
 
 	private boolean isTimeAlreadyBooked(Long designerId, LocalDateTime reservationTime) {
-		return !reservationRepository.findByDesigner_IdAndReservationDateAndReservationStateIn(designerId,
+		return !reservationRepository.findByDesigner_IdAndReservationDateAndReservationState(designerId,
 			reservationTime,
-			List.of(ReservationState.WAITING, ReservationState.ACCEPTED)).isEmpty();
+			ReservationState.PAYMENT_COMPLETED).isEmpty();
 	}
 }
