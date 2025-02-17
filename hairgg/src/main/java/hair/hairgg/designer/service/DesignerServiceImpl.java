@@ -1,6 +1,7 @@
 package hair.hairgg.designer.service;
 
 import hair.hairgg.designer.domain.Designer;
+import hair.hairgg.designer.dto.SearchFilterDto;
 import hair.hairgg.designer.repository.DesignerMajorRepository;
 import hair.hairgg.designer.repository.DesignerRepository;
 import hair.hairgg.exception.ErrorCode;
@@ -8,6 +9,7 @@ import hair.hairgg.exception.custom.DesignerError;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,5 +33,12 @@ public class DesignerServiceImpl implements DesignerService {
     @Transactional(readOnly = true)
     public Page<Designer> getDesigners(Integer page) {
         return designerRepository.findAll(PageRequest.of(page, 10, Sort.by("id").ascending()));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Designer> getDesignersWithFilter(Integer page, SearchFilterDto filter) {
+        Pageable pageable = PageRequest.of(page, 10);
+        return designerRepository.searchWithFilter(pageable, filter);
     }
 }

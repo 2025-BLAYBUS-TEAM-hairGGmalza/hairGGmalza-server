@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface DesignerRepository extends JpaRepository<Designer, Long> {
+public interface DesignerRepository extends JpaRepository<Designer, Long>, DesignerCustomRepository {
     Page<Designer> findAll(Pageable pageable);
 }
