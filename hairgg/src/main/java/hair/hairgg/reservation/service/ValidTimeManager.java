@@ -17,8 +17,8 @@ public class ValidTimeManager {
 	public static List<LocalTime> getValidTimes(List<LocalDateTime> reservedTimes) {
 		List<LocalTime> validTimes = new ArrayList<>();
 		LocalTime time = LocalTime.of(START_HOUR, 0);
-		while(time.getHour() < END_HOUR) {
-			if(!isReservedTime(reservedTimes, time)) {
+		while (time.getHour() < END_HOUR) {
+			if (!isReservedTime(reservedTimes, time)) {
 				validTimes.add(time);
 			}
 			time = time.plusMinutes(INTERVER_MIN);
@@ -28,8 +28,8 @@ public class ValidTimeManager {
 
 	//TODO: 나중에 리팩토링 고민..
 	private static boolean isReservedTime(List<LocalDateTime> reservedTimes, LocalTime time) {
-		for(LocalDateTime reservedTime : reservedTimes) {
-			if(reservedTime.getHour() == time.getHour() && reservedTime.getMinute() == time.getMinute()) {
+		for (LocalDateTime reservedTime : reservedTimes) {
+			if (reservedTime.getHour() == time.getHour() && reservedTime.getMinute() == time.getMinute()) {
 				return true;
 			}
 		}

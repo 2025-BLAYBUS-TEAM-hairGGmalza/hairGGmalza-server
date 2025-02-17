@@ -16,11 +16,6 @@ import hair.hairgg.reservation.ReservationRepository;
 import hair.hairgg.reservation.domain.ReservationState;
 
 public class MockReservationRepository implements ReservationRepository {
-	@Override
-	public List<Reservation> findByDesigner_IdAndReservationDateAndReservationStateIn(Long designerId,
-		LocalDateTime reservationDate, List<ReservationState> reservationStates) {
-		return List.of();
-	}
 
 	@Override
 	public List<Reservation> findByMember_IdOrderByReservationDate(Long memberId) {
@@ -28,8 +23,14 @@ public class MockReservationRepository implements ReservationRepository {
 	}
 
 	@Override
-	public List<LocalDateTime> findReservationDateByDesignerIdAndReservationDateBetween(Long designerId,
-		LocalDateTime start, LocalDateTime end) {
+	public List<LocalDateTime> findReservationDateByDesignerIdAndReservationStateAndReservationDateBetween(
+		Long designerId, ReservationState reservationState, LocalDateTime start, LocalDateTime end) {
+		return List.of();
+	}
+
+	@Override
+	public List<Reservation> findByDesigner_IdAndReservationDateAndReservationState(Long designerId,
+		LocalDateTime reservationDate, ReservationState reservationState) {
 		return List.of();
 	}
 
