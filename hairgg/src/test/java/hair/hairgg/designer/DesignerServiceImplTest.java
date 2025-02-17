@@ -1,6 +1,8 @@
 package hair.hairgg.designer.service;
 
 import hair.hairgg.designer.domain.*;
+import hair.hairgg.designer.dto.SearchFilterDto.SearchFilter;
+import hair.hairgg.designer.repository.DesignerCustomRepository;
 import hair.hairgg.mock.designer.MockDesignerRepository;
 import hair.hairgg.mock.designerMajor.MockDesignerMajorRepository;
 import hair.hairgg.mock.major.MockMajorRepository;
@@ -56,6 +58,41 @@ class DesignerServiceImplTest {
                     .collect(Collectors.toList());
 
             return new PageImpl<>(pagedList, pageable, allDesigners.size());
+        }
+    }
+
+    private static class MyMockDesignerCustomRepository implements DesignerCustomRepository {
+
+        private final Map<Long, Designer> database = new HashMap<>();
+        private long sequence = 1L;
+
+        public <S extends Designer> S save(S entity) {
+            if (entity.getId() == null) {
+                setPrivateField(entity, "id", sequence++);
+            }
+            database.put(entity.getId(), entity);
+            return entity;
+        }
+
+        @Override
+        public Page<Designer> searchWithFilter(Pageable pageable, SearchFilter filter) {
+            List<Designer> filteredDesigners = database.values().stream()
+                    .filter(d -> filter.region() == null || filter.region() == Region.서울전체 || d.getRegion().equals(filter.region()))
+                    .filter(d -> filter.meetingType() == null || filter.meetingType() == MeetingType.BOTH || d.getMeetingType().equals(filter.meetingType()))
+                    .filter(d -> filter.minPrice() == null || (
+                            (d.getMeetingType() == MeetingType.ONLINE && d.getOnlinePrice() >= filter.minPrice()) ||
+                                    (d.getMeetingType() == MeetingType.OFFLINE && d.getOfflinePrice() >= filter.minPrice())
+                    ))
+                    .filter(d -> filter.maxPrice() == null || (
+                            (d.getMeetingType() == MeetingType.ONLINE && d.getOnlinePrice() <= filter.maxPrice()) ||
+                                    (d.getMeetingType() == MeetingType.OFFLINE && d.getOfflinePrice() <= filter.maxPrice())
+                    ))
+                    .collect(Collectors.toList());
+
+            int start = (int) pageable.getOffset();
+            int end = Math.min(start + pageable.getPageSize(), filteredDesigners.size());
+
+            return new PageImpl<>(filteredDesigners.subList(start, end), pageable, filteredDesigners.size());
         }
     }
 
@@ -171,5 +208,40 @@ class DesignerServiceImplTest {
         assertNotNull(designers);
         assertEquals(2, designers.getTotalElements());
         assertEquals("사용자1", designers.getContent().get(0).getName());
+    }
+
+    @Test
+    void 지역_필터_조회() {
+        Designer newDesigner1 = Designer.builder()
+                .name("사용자1")
+                .region(Region.서울전체)
+                .address("블레이버스 옥탑방")
+                .profile("example1@example.com")
+                .description("해커톤 재밌네")
+                .offlinePrice(40000)
+                .onlinePrice(30000)
+                .meetingType(MeetingType.BOTH)
+                .build();
+        designerRepository.save(newDesigner1);
+
+        Designer newDesigner2 = Designer.builder()
+                .name("사용자2")
+                .region(Region.홍대_연남_합정)
+                .address("홍대 빈티지")
+                .profile("example2@example.com")
+                .description("테스트 코드 재밌네")
+                .offlinePrice(45000)
+                .onlinePrice(35000)
+                .meetingType(MeetingType.ONLINE)
+                .build();
+        designerRepository.save(newDesigner2);
+
+        SearchFilter filter = new SearchFilter(null, Region.서울전체, null, null);
+        Page<Designer> designers = designerService.getDesignersWithFilter(0, filter);
+        assertEquals(2, designers.getTotalElements());
+
+        filter = new SearchFilter(null, Region.홍대_연남_합정, null, null);
+        designers = designerService.getDesignersWithFilter(0, filter);
+        assertEquals(1, designers.getTotalElements());
     }
 }
