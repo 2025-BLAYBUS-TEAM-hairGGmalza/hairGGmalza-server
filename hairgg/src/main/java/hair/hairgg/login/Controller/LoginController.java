@@ -50,22 +50,10 @@ public class LoginController {
         }
     }
 
-    @GetMapping("/signup")
-    public ResponseEntity<?> Signup(@RequestParam("code") String code, @RequestBody Member member) {
+    @PostMapping("/signup")
+    public ResponseEntity<?> Signup(@RequestBody Member member) {
 
-        String accessToken = loginService.getGoogleAccessToken(code);
-        System.out.println("accessToken: "+accessToken);
-
-        Member newMember = new Member();
-
-        newMember.setLoginId(member.getLoginId());
-        newMember.setName(member.getName());
-        newMember.setNickname(member.getNickname());
-        newMember.setPhoneNumber(member.getPhoneNumber());
-        newMember.setGender(member.getGender());
-        newMember.setProfileUrl(member.getProfileUrl());
-
-        memberRepository.save(newMember);
+        memberRepository.save(member);
 
         String token = jwtUtil.generateToken(member.getLoginId());
         return ResponseEntity.ok().body(Map.of("token", token, "redirect", "/home"));
