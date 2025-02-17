@@ -2,8 +2,6 @@ package hair.hairgg.reservation;
 
 import java.util.List;
 
-import org.hibernate.Hibernate;
-
 import hair.hairgg.designer.converter.DesignerConverter;
 import hair.hairgg.designer.domain.Designer;
 import hair.hairgg.member.Member;
@@ -12,7 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class ReservationConverter {
-	public static Reservation toEntity(ReservationDto.ReservationRequest request,int price,Member member,Designer designer) {
+	public static Reservation toEntity(ReservationReqDto.ReservationRequest request, int price, Member member,
+		Designer designer) {
 		return Reservation.builder()
 			.member(member)
 			.designer(designer)
@@ -22,8 +21,8 @@ public class ReservationConverter {
 			.build();
 	}
 
-	public static ReservationDto.ReservationInfo toReservationInfo(Reservation newReservation) {
-		return new ReservationDto.ReservationInfo(
+	public static ReservationReqDto.ReservationInfo toReservationInfo(Reservation newReservation) {
+		return new ReservationReqDto.ReservationInfo(
 			newReservation.getId(),
 			newReservation.getMember().getId(),
 			newReservation.getDesigner().getId(),
@@ -34,11 +33,12 @@ public class ReservationConverter {
 		);
 	}
 
-	public static List<ReservationDto.ReservationDetailInfo> toReservationDetailInfoList(List<Reservation> reservations) {
+	public static List<ReservationReqDto.ReservationDetailInfo> toReservationDetailInfoList(
+		List<Reservation> reservations) {
 		return reservations.stream()
 			.map(reservation -> {
 				log.info("designer name : {}", reservation.getDesigner().getName());
-				return new ReservationDto.ReservationDetailInfo(
+				return new ReservationReqDto.ReservationDetailInfo(
 					reservation.getId(),
 					DesignerConverter.toDesignerInfobrief(reservation.getDesigner()),
 					reservation.getReservationState(),
