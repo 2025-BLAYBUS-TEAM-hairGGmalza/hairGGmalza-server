@@ -1,6 +1,6 @@
 package hair.hairgg.security.jwt;
 
-import hair.hairgg.memberSecond.Dto.Member;
+import hair.hairgg.memberSecond.Dto.MemberSecond;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,10 +37,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String email = jwtUtil.getEmailFromToken(token);
 
         if (email != null && jwtUtil.validateToken(token) && SecurityContextHolder.getContext().getAuthentication() == null) {
-            Member member = (Member) customUserDetailsService.loadUserByUsername(email);
+            MemberSecond memberSecond = (MemberSecond) customUserDetailsService.loadUserByUsername(email);
 
             UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(member, null, member.getAuthorities());
+                    new UsernamePasswordAuthenticationToken(memberSecond, null, memberSecond.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } else {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

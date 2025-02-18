@@ -12,7 +12,7 @@ import java.util.Collections;
 @Entity
 @NoArgsConstructor
 @Data
-public class Member implements UserDetails {
+public class MemberSecond implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // 자동으로 증가하는 ID
     @Column(name="memberId")
@@ -30,7 +30,7 @@ public class Member implements UserDetails {
     @Column(nullable = false)
     private String profileUrl;
 
-    public Member(String googleId, String loginId, String name, String profileUrl, String nickname, String gender, String phoneNumber) {
+    public MemberSecond(String googleId, String loginId, String name, String profileUrl, String nickname, String gender, String phoneNumber) {
         this.googleId = googleId;
         this.loginId = loginId;
         this.name = name;

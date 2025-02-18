@@ -1,6 +1,6 @@
 package hair.hairgg.login.Service;
 
-import hair.hairgg.memberSecond.Dto.Member;
+import hair.hairgg.memberSecond.Dto.MemberSecond;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -47,7 +47,7 @@ public class LoginService {
         return response.getBody() != null ? response.getBody().get("access_token").toString() : null;
     }
 
-    public Member getUserInfo(String accessToken) {
+    public MemberSecond getUserInfo(String accessToken) {
         if (accessToken == null) {
             throw new IllegalArgumentException("Access Token이 유효하지 않습니다.");
         }
@@ -68,6 +68,6 @@ public class LoginService {
             throw new IllegalStateException("사용자 정보를 가져오는 데 실패했습니다.");
         }
 
-        return new Member(userInfo.get("id").toString(), userInfo.get("email").toString(), userInfo.get("name").toString(), userInfo.get("picture").toString(), null, null, null);
+        return new MemberSecond(userInfo.get("id").toString(), userInfo.get("email").toString(), userInfo.get("name").toString(), userInfo.get("picture").toString(), null, null, null);
     }
 }
