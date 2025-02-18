@@ -102,8 +102,8 @@ public class DesignerCustomRepositoryImpl implements DesignerCustomRepository {
         List<Designer> designers = jpaQueryFactory
                 .selectFrom(designer)
                 .distinct()
-                .join(designer.designerMajors, designerMajor).fetchJoin()
-                .join(designerMajor.major, major).fetchJoin()
+                .leftJoin(designer.designerMajors, designerMajor).fetchJoin()
+                .leftJoin(designerMajor.major, major).fetchJoin()
                 .where(builder)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
