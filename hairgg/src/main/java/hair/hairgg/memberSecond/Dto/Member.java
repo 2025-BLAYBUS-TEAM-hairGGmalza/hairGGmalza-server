@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class Member {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // 자동으로 증가하는 ID
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="memberId")
     private Long id;
 

@@ -44,26 +44,23 @@ public class LoginController {
     @PostMapping("/signup")
     public ResponseEntity<Member> signup(@AuthenticationPrincipal UserDetails userDetails, @RequestBody Member member) {
         if (userDetails == null) {
-            return ResponseEntity.status(401).body(null);  // Unauthorized 응답을 null로 처리
+            return ResponseEntity.status(401).body(null);
         }
 
-        // @AuthenticationPrincipal을 통해 로그인된 사용자의 이메일을 가져옵니다
         String email = userDetails.getUsername();
 
         Optional<Member> existMember = memberRepository.findByLoginId(email);
 
         Member newMember;
         if (existMember.isPresent()) {
-            // 기존 회원이 있을 경우 정보 업데이트
             newMember = existMember.get();
             newMember.setNickname(member.getNickname());
             newMember.setGender(member.getGender());
             newMember.setPhoneNumber(member.getPhoneNumber());
         } else {
-            // 기존 회원이 없을 경우, 새로운 회원 생성
             newMember = new Member(email, member.getName(), member.getProfileUrl(), member.getNickname(), member.getGender(), member.getPhoneNumber());
         }
         memberRepository.save(newMember);
-        return ResponseEntity.ok(newMember);  // 업데이트된 회원 정보 반환
+        return ResponseEntity.ok(newMember);
     }
 }

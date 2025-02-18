@@ -48,18 +48,14 @@ public class LoginService {
         params.put("grant_type", "authorization_code");
         System.out.println("params: "+ params);
 
-        // 정확한 제네릭 타입 지정
         ResponseEntity<Map> response = restTemplate.postForEntity(tokenUrl, params, Map.class);
         System.out.println("Response body: " + response.getBody());
 
-        // access_token이 없으면 null 반환
         return response.getBody() != null ? response.getBody().get("access_token").toString() : null;
     }
 
-    // 액세스 토큰으로 사용자 정보 요청
     public Member getUserInfo(String accessToken) {
         if (accessToken == null) {
-            // 예외를 던져서 처리
             throw new IllegalArgumentException("Access Token이 유효하지 않습니다.");
         }
 
@@ -70,13 +66,12 @@ public class LoginService {
         headers.set("Authorization", "Bearer " + accessToken);
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
-        // 정확한 제네릭 타입 지정
+
         ResponseEntity<Map> response = restTemplate.exchange(userInfoUrl, HttpMethod.GET, entity, Map.class);
 
         Map<String, Object> userInfo = response.getBody();
 
         if (userInfo == null || !userInfo.containsKey("email") || !userInfo.containsKey("name") || !userInfo.containsKey("picture")) {
-            // 필수 정보가 없을 경우 처리
             throw new IllegalStateException("사용자 정보를 가져오는 데 실패했습니다.");
         }
 

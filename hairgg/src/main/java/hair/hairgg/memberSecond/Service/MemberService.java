@@ -26,10 +26,9 @@ public class MemberService {
 
     public Member findByLoginId(String email) {
         return memberRepository.findByLoginId(email)
-                .orElseThrow(() -> new GeneralException(ErrorCode.MEMBER_NOT_FOUND));  // 예외 처리
+                .orElseThrow(() -> new GeneralException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
-    // JWT 토큰에서 이메일로 멤버 정보 가져오기
     public Member getMemberFromJwt(String token) {
         String email = jwtUtil.getEmailFromToken(token);
         return findByLoginId(email);
