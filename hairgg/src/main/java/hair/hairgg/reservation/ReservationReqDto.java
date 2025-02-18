@@ -20,25 +20,4 @@ public class ReservationReqDto {
 		LocalDateTime reservationDate
 	) {
 	}
-
-	public record ReservationInfo(
-		Long id,
-		Long memberId,
-		Long designerId,
-		ReservationState state,
-		MeetingType meetingType,
-		int price,
-		LocalDateTime reservationDate
-	) {
-	}
-
-	public record ReservationDetailInfo(
-		Long id,
-		DesignerDto.DesignerInfobrief designer,
-		ReservationState state,
-		MeetingType meetingType,
-		int price,
-		LocalDateTime reservationDate
-	) {
-	}
 }

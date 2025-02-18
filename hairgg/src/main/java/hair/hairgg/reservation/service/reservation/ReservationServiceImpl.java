@@ -75,13 +75,23 @@ public class ReservationServiceImpl implements ReservationService {
 		return reservationRepository.save(reservation);
 	}
 
+
 	@Transactional(readOnly = true)
+	@Override
 	public List<Reservation> getReservationByMemberId(Long memberId) {
 		//TODO:member 있는지 확인 필요
 		return reservationRepository.findByMember_IdOrderByReservationDate(memberId);
 	}
 
+	@Transactional
+	@Override
+	public Reservation getReservationById(Long reservationId) {
+		return reservationRepository.findById(reservationId)
+			.orElseThrow(() -> new ReservationError(ErrorCode.RESERVATION_NOT_FOUND));
+	}
+
 	@Transactional(readOnly = true)
+	@Override
 	public List<LocalTime> getValidTimes(Long designerId, LocalDate reservationDate) {
 		validateValidTimes(designerId, reservationDate);
 		List<LocalDateTime> reservatedTimes = reservationRepository.findReservationDateByDesignerIdAndReservationStateAndReservationDateBetween(
