@@ -46,8 +46,8 @@ public class KakaoPayService implements PayService {
 
 		ResponseEntity<PayInfo.PayReadyInfo> response = template.postForEntity(readyUrl, entity,
 			PayInfo.PayReadyInfo.class);
+		log.info("approval_url : {}", kakaoPayConfig.getApprovalUrl(reservation.getId()));
 		log.info("response : {}", response.getBody());
-
 		return response.getBody();
 	}
 
@@ -68,6 +68,7 @@ public class KakaoPayService implements PayService {
 
 		ResponseEntity<PayInfo.PayApproveInfo> response = template.postForEntity(approveUrl, requestEntity,
 			PayInfo.PayApproveInfo.class);
+
 		log.info("response : {}", response.getBody());
 
 		return response.getBody();
