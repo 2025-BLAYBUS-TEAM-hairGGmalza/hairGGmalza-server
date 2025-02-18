@@ -32,6 +32,10 @@ public class Designer {
     private int onlinePrice;
     @Enumerated(EnumType.ORDINAL)
     private MeetingType meetingType;
+
+    private String portfolio1;
+    private String portfolio2;
+    
     @OneToMany(mappedBy = "designer", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @Builder.Default
     private List<DesignerMajor> designerMajors = new ArrayList<>();
