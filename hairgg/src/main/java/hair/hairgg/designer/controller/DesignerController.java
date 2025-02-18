@@ -23,7 +23,7 @@ public class DesignerController {
     public ApiResponse<DesignerInfo> getDesignerById(@PathVariable Long designerId) {
         Designer designer = designerService.getDesignerById(designerId);
 
-        return ApiResponse.success("디자이저 조회 성공: " + designerId, DesignerConverter.toDesignerInfo(designer));
+        return ApiResponse.success("디자이너 조회 성공: " + designerId, DesignerConverter.toDesignerInfo(designer));
     }
 
     @GetMapping("")
