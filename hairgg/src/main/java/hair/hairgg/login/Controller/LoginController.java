@@ -1,8 +1,8 @@
 package hair.hairgg.login.Controller;
 
 import hair.hairgg.login.Service.LoginService;
-import hair.hairgg.memberSecond.Dto.Member;
-import hair.hairgg.memberSecond.Repository.MemberRepository;
+import hair.hairgg.member.Member;
+import hair.hairgg.member.MemberRepository;
 import hair.hairgg.security.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

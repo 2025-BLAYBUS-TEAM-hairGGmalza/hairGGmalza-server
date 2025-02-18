@@ -1,6 +1,6 @@
 package hair.hairgg.login.Service;
 
-import hair.hairgg.memberSecond.Dto.Member;
+import hair.hairgg.member.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
