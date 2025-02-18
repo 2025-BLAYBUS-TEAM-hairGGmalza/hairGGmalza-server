@@ -32,13 +32,13 @@ public class DesignerServiceImpl implements DesignerService {
     @Override
     @Transactional(readOnly = true)
     public Page<Designer> getDesigners(Integer page) {
-        return designerRepository.findAll(PageRequest.of(page, 10, Sort.by("id").ascending()));
+        return designerRepository.findAll(PageRequest.of(page, 30, Sort.by("id").ascending()));
     }
 
     @Override
     @Transactional(readOnly = true)
     public Page<Designer> getDesignersWithFilter(Integer page, SearchFilterDto filter) {
-        Pageable pageable = PageRequest.of(page, 10);
+        Pageable pageable = PageRequest.of(page, 30);
         return designerRepository.searchWithFilter(pageable, filter);
     }
 }
