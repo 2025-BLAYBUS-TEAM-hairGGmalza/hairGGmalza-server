@@ -3,10 +3,7 @@ package hair.hairgg.designer.repository;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.NumberPath;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import hair.hairgg.designer.domain.Designer;
-import hair.hairgg.designer.domain.MeetingType;
-import hair.hairgg.designer.domain.QDesigner;
-import hair.hairgg.designer.domain.Region;
+import hair.hairgg.designer.domain.*;
 import hair.hairgg.designer.dto.SearchFilterDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -26,6 +23,9 @@ public class DesignerCustomRepositoryImpl implements DesignerCustomRepository {
     @Override
     public Page<Designer> searchWithFilter(Pageable pageable, SearchFilterDto filter) {
         QDesigner designer = QDesigner.designer;
+        QDesignerMajor designerMajor = QDesignerMajor.designerMajor;
+        QMajor major = QMajor.major;
+
         BooleanBuilder builder = new BooleanBuilder();
 
         // MeetingType 조건 처리
@@ -80,18 +80,30 @@ public class DesignerCustomRepositoryImpl implements DesignerCustomRepository {
             builder.and(designer.region.eq(filter.getRegion()));
         }
 
-        // 전체 개수 조회
+        // Major 조건 처리
+        if (filter.getMajors() != null && !filter.getMajors().isEmpty()) {
+            BooleanBuilder majorCondition = new BooleanBuilder();
+            for (String majorName : filter.getMajors()) {
+                majorCondition.or(major.name.eq(majorName));
+            }
+            builder.and(majorCondition);
+        }
+
         long total = Optional.ofNullable(
                 jpaQueryFactory
-                        .select(designer.count())
+                        .select(designer.countDistinct())
                         .from(designer)
+                        .join(designer.designerMajors, designerMajor)
+                        .join(designerMajor.major, major)
                         .where(builder)
                         .fetchOne()
         ).orElse(0L);
 
-        // 페이징된 결과 조회
         List<Designer> designers = jpaQueryFactory
                 .selectFrom(designer)
+                .distinct()
+                .join(designer.designerMajors, designerMajor).fetchJoin()
+                .join(designerMajor.major, major).fetchJoin()
                 .where(builder)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
