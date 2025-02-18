@@ -17,18 +17,19 @@ public class KakaoPayConfig {
 	@Value("${kakao.pay.cid}")
 	private String cid;
 
-	@Value("${kakao.pay.base-url}")
-	private String baseUrl;
+	// @Value("${kakao.pay.base-url}")
+
+	private String baseUrl="http://localhost:3000";
 
 	public String getApprovalUrl(Long reservationId) {
-		return baseUrl + "/reservation/" + reservationId + "/pay/completed";
+		return baseUrl + "/test/"+reservationId;
 	}
 
 	public String getCancelUrl(Long reservationId) {
-		return baseUrl + "/reservation/" + reservationId + "/pay/cancel";
+		return baseUrl + "/test/fail"+reservationId;
 	}
 
 	public String getFailUrl(Long reservationId) {
-		return baseUrl + "/reservation/" + reservationId + "/pay/fail";
+		return baseUrl + "/test/fail"+reservationId;
 	}
 }
