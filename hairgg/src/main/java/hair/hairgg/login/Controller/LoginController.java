@@ -20,7 +20,7 @@ public class LoginController {
     private final MemberRepository memberRepository;
     private final JwtUtil jwtUtil;
 
-    @GetMapping("/login")
+    @PostMapping("/login")
     public ResponseEntity<?> googleLogin(@RequestParam("code") String code) {
 
         String accessToken = loginService.getGoogleAccessToken(code);
