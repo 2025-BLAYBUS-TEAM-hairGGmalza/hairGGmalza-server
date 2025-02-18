@@ -26,7 +26,7 @@ public class Review {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Designer designer;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 1000)
     private String review;
 
     @Column(nullable = false)
