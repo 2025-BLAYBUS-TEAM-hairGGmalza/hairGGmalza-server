@@ -26,7 +26,7 @@ public class DesignerController {
         return ApiResponse.success("디자이너 조회 성공: " + designerId, DesignerConverter.toDesignerInfo(designer));
     }
 
-    @GetMapping("")
+    @PostMapping("")
     public ApiResponse<DesignerInfos> getAllDesigners(
             @RequestParam(name = "page", defaultValue = "0") Integer page,
             @RequestBody SearchFilterDto filter) {

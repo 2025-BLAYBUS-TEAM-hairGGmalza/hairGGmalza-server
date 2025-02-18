@@ -6,6 +6,8 @@ import hair.hairgg.designer.domain.Region;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -14,4 +16,5 @@ public class SearchFilterDto {
     Region region;
     Integer minPrice;
     Integer maxPrice;
+    List<String> majors;
 }
