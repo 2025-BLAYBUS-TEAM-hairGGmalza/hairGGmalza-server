@@ -1,6 +1,6 @@
 package hair.hairgg.login.Service;
 
-import hair.hairgg.member.Dto.Member;
+import hair.hairgg.memberSecond.Dto.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -35,21 +35,14 @@ public class LoginService {
 
         String tokenUrl = "https://oauth2.googleapis.com/token";
 
-        System.out.println("code2: "+ decodedCode);
-        System.out.println("client-id: "+ clientId);
-        System.out.println("client-secret: "+ clientSecret);
-        System.out.println("redirect_uri: "+ redirectUri);
-
         Map<String, String> params = new HashMap<>();
         params.put("code", decodedCode);
         params.put("client_id", clientId);
         params.put("client_secret", clientSecret);
         params.put("redirect_uri", redirectUri);
         params.put("grant_type", "authorization_code");
-        System.out.println("params: "+ params);
 
         ResponseEntity<Map> response = restTemplate.postForEntity(tokenUrl, params, Map.class);
-        System.out.println("Response body: " + response.getBody());
 
         return response.getBody() != null ? response.getBody().get("access_token").toString() : null;
     }
@@ -61,7 +54,6 @@ public class LoginService {
 
         String userInfoUrl = "https://www.googleapis.com/oauth2/v2/userinfo";
 
-        System.out.println("accessToken1: "+ accessToken);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + accessToken);
 
@@ -70,11 +62,12 @@ public class LoginService {
         ResponseEntity<Map> response = restTemplate.exchange(userInfoUrl, HttpMethod.GET, entity, Map.class);
 
         Map<String, Object> userInfo = response.getBody();
+        System.out.println("userInfo: " + userInfo);
 
         if (userInfo == null || !userInfo.containsKey("email") || !userInfo.containsKey("name") || !userInfo.containsKey("picture")) {
             throw new IllegalStateException("사용자 정보를 가져오는 데 실패했습니다.");
         }
 
-        return new Member(null, userInfo.get("email").toString(), userInfo.get("name").toString(), null, null, null, userInfo.get("picture").toString());
+        return new Member(userInfo.get("id").toString(), userInfo.get("email").toString(), userInfo.get("name").toString(), userInfo.get("picture").toString(), null, null, null);
     }
 }

@@ -1,7 +1,5 @@
 package hair.hairgg.memberSecond.Service;
 
-import hair.hairgg.exception.ErrorCode;
-import hair.hairgg.exception.GeneralException;
 import hair.hairgg.memberSecond.Dto.Member;
 import hair.hairgg.memberSecond.Repository.MemberRepository;
 import hair.hairgg.security.jwt.JwtUtil;
@@ -20,13 +18,12 @@ public class MemberService {
         this.jwtUtil = jwtUtil;
     }
 
-    public Member findById(Long id) {
-        return memberRepository.findById(id).orElse(null);
+    public Member findByLoginId(String email) {
+        return memberRepository.findByLoginId(email).orElse(null);
     }
 
-    public Member findByLoginId(String email) {
-        return memberRepository.findByLoginId(email)
-                .orElseThrow(() -> new GeneralException(ErrorCode.MEMBER_NOT_FOUND));
+    public Member findById(Long id) {
+        return memberRepository.findById(id).orElse(null);
     }
 
     public Member getMemberFromJwt(String token) {

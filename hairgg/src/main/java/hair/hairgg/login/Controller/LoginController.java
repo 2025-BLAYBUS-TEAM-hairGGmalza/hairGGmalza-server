@@ -1,13 +1,12 @@
 package hair.hairgg.login.Controller;
 
 import hair.hairgg.login.Service.LoginService;
-import hair.hairgg.member.Dto.Member;
-import hair.hairgg.member.Repository.MemberRepository;
+import hair.hairgg.memberSecond.Dto.Member;
+import hair.hairgg.memberSecond.Repository.MemberRepository;
 import hair.hairgg.security.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -27,7 +26,6 @@ public class LoginController {
         String accessToken = loginService.getGoogleAccessToken(code);
 
         Member userInfo = loginService.getUserInfo(accessToken);
-        System.out.println("userInfo: "+userInfo);
         String email = userInfo.getLoginId();
 
         Optional<Member> existingMember = memberRepository.findByLoginId(email);
@@ -42,25 +40,16 @@ public class LoginController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<Member> signup(@AuthenticationPrincipal UserDetails userDetails, @RequestBody Member member) {
-        if (userDetails == null) {
+    public ResponseEntity<Member> signup(@AuthenticationPrincipal Member memberDto, @RequestBody Member member) {
+        if (memberDto == null) {
             return ResponseEntity.status(401).body(null);
         }
 
-        String email = userDetails.getUsername();
+        memberDto.setNickname(member.getNickname());
+        memberDto.setGender(member.getGender());
+        memberDto.setPhoneNumber(member.getPhoneNumber());
 
-        Optional<Member> existMember = memberRepository.findByLoginId(email);
-
-        Member newMember;
-        if (existMember.isPresent()) {
-            newMember = existMember.get();
-            newMember.setNickname(member.getNickname());
-            newMember.setGender(member.getGender());
-            newMember.setPhoneNumber(member.getPhoneNumber());
-        } else {
-            newMember = new Member(email, member.getName(), member.getProfileUrl(), member.getNickname(), member.getGender(), member.getPhoneNumber());
-        }
-        memberRepository.save(newMember);
-        return ResponseEntity.ok(newMember);
+        memberRepository.save(memberDto);
+        return ResponseEntity.ok(memberDto);
     }
 }
