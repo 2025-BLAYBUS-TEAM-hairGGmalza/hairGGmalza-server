@@ -1,6 +1,6 @@
 package hair.hairgg.security.jwt;
 
-import hair.hairgg.member.Member;
+import hair.hairgg.memberSecond.Member;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,13 +34,22 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         String token = authorizationHeader.substring(7);
-        String email = jwtUtil.getEmailFromToken(token);
 
-        if (email != null && jwtUtil.validateToken(token) && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (!jwtUtil.validateToken(token)) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Invalid or expired token");
+            return;
+        }
+
+        String email = jwtUtil.getEmailFromToken(token);
+        Long id = jwtUtil.getIdFromToken(token);
+
+        if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             Member member = (Member) customUserDetailsService.loadUserByUsername(email);
 
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(member, null, member.getAuthorities());
+            request.setAttribute("id", id);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } else {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

@@ -14,11 +14,12 @@ public class JwtUtil {
     @Value("${jwt.secret}")
     private String secretKey;
 
-    public String generateToken(String email) {
+    public String generateToken(String email, Long id) {
 
         long EXPIRATION_TIME = 1000 * 60 * 60 * 24;
         return Jwts.builder()
                 .setSubject(email)
+                .claim("id", id) // JWT에 id 저장
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(SignatureAlgorithm.HS256, secretKey)
@@ -34,6 +35,10 @@ public class JwtUtil {
 
     public String getEmailFromToken(String token) {
         return extractClaims(token).getSubject();
+    }
+
+    public Long getIdFromToken(String token) {
+        return extractClaims(token).get("id", Long.class);
     }
 
     public boolean validateToken(String token) {

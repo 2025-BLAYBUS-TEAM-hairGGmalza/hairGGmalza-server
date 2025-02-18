@@ -33,6 +33,8 @@ public class LoginService {
     public String getGoogleAccessToken(String code) {
         String decodedCode = URLDecoder.decode(code, StandardCharsets.UTF_8);
 
+        System.out.println(decodedCode);
+
         String tokenUrl = "https://oauth2.googleapis.com/token";
 
         Map<String, String> params = new HashMap<>();
