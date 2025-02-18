@@ -17,7 +17,8 @@ public class ReservationResDto {
 		ReservationState state,
 		MeetingType meetingType,
 		int price,
-		LocalDateTime reservationDate
+		LocalDateTime reservationDate,
+		String meetUrl
 	) {
 	}
 
@@ -27,7 +28,8 @@ public class ReservationResDto {
 		ReservationState state,
 		MeetingType meetingType,
 		int price,
-		LocalDateTime reservationDate
+		LocalDateTime reservationDate,
+		String meetUrl
 	) {
 	}
 

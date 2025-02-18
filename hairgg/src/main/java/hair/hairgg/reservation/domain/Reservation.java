@@ -37,6 +37,8 @@ public class Reservation {
 	@Column(nullable = false)
 	private MeetingType meetingType;
 	@Column(nullable = false)
+	private String meetUrl;
+	@Column(nullable = false)
 	private int price;
 	@Column
 	private LocalDateTime paymentAt;
@@ -64,6 +66,7 @@ public class Reservation {
 		this.designer = designer;
 		this.member = member;
 		this.reservationState = ReservationState.WAITING;
+		this.meetUrl= "https://meet.google.com/landing";
 	}
 
 	public void changeState(ReservationState state) {
