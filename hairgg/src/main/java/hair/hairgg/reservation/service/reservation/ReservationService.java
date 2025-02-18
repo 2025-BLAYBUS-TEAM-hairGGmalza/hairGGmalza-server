@@ -19,4 +19,6 @@ public interface ReservationService {
 	List<LocalTime> getValidTimes(Long designerId, LocalDate reservationDate);
 
 	Reservation payCancel(Long reservationId);
+
+	Reservation getReservationById(Long reservationId);
 }

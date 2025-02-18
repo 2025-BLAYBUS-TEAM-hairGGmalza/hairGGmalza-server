@@ -34,7 +34,7 @@ public class ReservationController {
 	}
 
 	@GetMapping("/{reservationId}/pay/completed")
-	public ApiResponse<ReservationReqDto.ReservationInfo> payCompleted(
+	public ApiResponse<ReservationResDto.ReservationInfo> payCompleted(
 		@PathVariable Long reservationId,
 		@RequestParam("pg_token") String pgToken) {
 		Reservation payedReservation = reservationService.payApprove(reservationId, pgToken);
@@ -42,7 +42,7 @@ public class ReservationController {
 	}
 
 	@GetMapping({"/{reservationId}/pay/canceled", "/{reservationId}/pay/failed"})
-	public ApiResponse<ReservationReqDto.ReservationInfo> payCanceled(
+	public ApiResponse<ReservationResDto.ReservationInfo> payCanceled(
 		@PathVariable Long reservationId) {
 		Reservation canceledReservation = reservationService.payCancel(reservationId);
 		return ApiResponse.success("결제 취소", ReservationConverter.toReservationInfo(canceledReservation));
@@ -50,10 +50,17 @@ public class ReservationController {
 
 
 	@GetMapping
-	public ApiResponse<List<ReservationReqDto.ReservationDetailInfo>> getReservationByMemberId(
+	public ApiResponse<List<ReservationResDto.ReservationDetailInfo>> getReservationByMemberId(
 		@RequestParam Long memberId) {//TODO: 추후 토큰에서 가져오기
 		List<Reservation> reservations = reservationService.getReservationByMemberId(memberId);
-		return ApiResponse.success("예약 조회 성공", ReservationConverter.toReservationDetailInfoList(reservations));
+		return ApiResponse.success("특정 멤버의 예약 조회 성공", ReservationConverter.toReservationDetailInfoList(reservations));
+	}
+
+	@GetMapping("/{reservationId}")
+	public ApiResponse<ReservationResDto.ReservationInfo> getReservationById(
+		@PathVariable Long reservationId) {
+		Reservation payedReservation = reservationService.getReservationById(reservationId);
+		return ApiResponse.success("결제 완료", ReservationConverter.toReservationInfo(payedReservation));
 	}
 
 	@GetMapping("/designer/{designerId}/valid-time")

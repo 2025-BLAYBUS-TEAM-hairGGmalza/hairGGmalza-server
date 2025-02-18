@@ -21,30 +21,32 @@ public class ReservationConverter {
 			.build();
 	}
 
-	public static ReservationReqDto.ReservationInfo toReservationInfo(Reservation newReservation) {
-		return new ReservationReqDto.ReservationInfo(
+	public static ReservationResDto.ReservationInfo toReservationInfo(Reservation newReservation) {
+		return new ReservationResDto.ReservationInfo(
 			newReservation.getId(),
 			newReservation.getMember().getId(),
 			newReservation.getDesigner().getId(),
 			newReservation.getReservationState(),
 			newReservation.getMeetingType(),
 			newReservation.getPrice(),
-			newReservation.getReservationDate()
+			newReservation.getReservationDate(),
+			newReservation.getMeetUrl()
 		);
 	}
 
-	public static List<ReservationReqDto.ReservationDetailInfo> toReservationDetailInfoList(
+	public static List<ReservationResDto.ReservationDetailInfo> toReservationDetailInfoList(
 		List<Reservation> reservations) {
 		return reservations.stream()
 			.map(reservation -> {
 				log.info("designer name : {}", reservation.getDesigner().getName());
-				return new ReservationReqDto.ReservationDetailInfo(
+				return new ReservationResDto.ReservationDetailInfo(
 					reservation.getId(),
 					DesignerConverter.toDesignerInfobrief(reservation.getDesigner()),
 					reservation.getReservationState(),
 					reservation.getMeetingType(),
 					reservation.getPrice(),
-					reservation.getReservationDate()
+					reservation.getReservationDate(),
+					reservation.getMeetUrl()
 				);
 			})
 			.toList();
