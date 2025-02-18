@@ -16,6 +16,8 @@ public class DesignerDto {
             Region region,
             String address,
             String profile,
+            String portfolio1,
+            String portfolio2,
             String description,
             int offlinePrice,
             int onlinePrice,

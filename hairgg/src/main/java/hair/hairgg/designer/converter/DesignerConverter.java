@@ -21,6 +21,8 @@ public class DesignerConverter {
                 .region(designer.getRegion())
                 .address(designer.getAddress())
                 .profile(designer.getProfile())
+                .portfolio1(designer.getPortfolio1())
+                .portfolio2(designer.getPortfolio2())
                 .description(designer.getDescription())
                 .offlinePrice(designer.getOfflinePrice())
                 .onlinePrice(designer.getOnlinePrice())
