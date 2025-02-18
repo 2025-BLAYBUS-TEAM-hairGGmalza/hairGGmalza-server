@@ -15,7 +15,6 @@ import java.util.Collections;
 public class Member implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // 자동으로 증가하는 ID
-    @Column(name="memberId")
     private Long id;
 
     @Column(unique = true, nullable = false)
