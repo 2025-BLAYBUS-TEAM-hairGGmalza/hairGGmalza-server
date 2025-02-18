@@ -6,7 +6,6 @@ import hair.hairgg.designer.domain.Designer;
 import hair.hairgg.designer.domain.MeetingType;
 import hair.hairgg.exception.ErrorCode;
 import hair.hairgg.exception.custom.ReservationError;
-import hair.hairgg.member.Member;
 import hair.hairgg.reservation.domain.pay.PaymentMethod;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

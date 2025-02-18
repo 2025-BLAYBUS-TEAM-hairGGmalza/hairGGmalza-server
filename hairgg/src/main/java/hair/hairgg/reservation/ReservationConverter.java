@@ -4,7 +4,6 @@ import java.util.List;
 
 import hair.hairgg.designer.converter.DesignerConverter;
 import hair.hairgg.designer.domain.Designer;
-import hair.hairgg.member.Member;
 import hair.hairgg.reservation.domain.Reservation;
 import lombok.extern.slf4j.Slf4j;
 
