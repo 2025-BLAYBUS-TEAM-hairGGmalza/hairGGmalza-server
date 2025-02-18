@@ -1,5 +1,6 @@
 package hair.hairgg.login.Controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import hair.hairgg.login.Service.LoginService;
 import hair.hairgg.member.Member;
 import hair.hairgg.member.MemberRepository;
@@ -21,7 +22,12 @@ public class LoginController {
     private final JwtUtil jwtUtil;
 
     @PostMapping("/login")
-    public ResponseEntity<?> googleLogin(@RequestParam("code") String code) {
+    public ResponseEntity<?> googleLogin(@RequestBody JsonNode jsonNode) {
+        String code = jsonNode.get("code").asText();
+        if (code == null || code.isEmpty()) {
+            System.out.println("Invalid Google Auth Code");
+            return null;
+        }
 
         String accessToken = loginService.getGoogleAccessToken(code);
 
