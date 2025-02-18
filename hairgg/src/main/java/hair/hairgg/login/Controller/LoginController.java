@@ -23,6 +23,7 @@ public class LoginController {
 
     @PostMapping("/login")
     public ResponseEntity<?> googleLogin(@RequestBody JsonNode jsonNode) {
+        System.out.println("body: " + jsonNode);
         String code = jsonNode.asText();
         if (code == null || code.isEmpty()) {
             System.out.println("Invalid Google Auth Code");
