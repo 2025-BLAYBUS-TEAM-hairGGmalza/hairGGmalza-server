@@ -93,8 +93,8 @@ public class DesignerCustomRepositoryImpl implements DesignerCustomRepository {
                 jpaQueryFactory
                         .select(designer.countDistinct())
                         .from(designer)
-                        .join(designer.designerMajors, designerMajor)
-                        .join(designerMajor.major, major)
+                        .leftJoin(designer.designerMajors, designerMajor)
+                        .leftJoin(designerMajor.major, major)
                         .where(builder)
                         .fetchOne()
         ).orElse(0L);
