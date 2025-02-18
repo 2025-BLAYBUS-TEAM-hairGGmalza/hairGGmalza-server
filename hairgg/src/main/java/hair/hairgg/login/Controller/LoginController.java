@@ -1,8 +1,8 @@
 package hair.hairgg.login.Controller;
 
 import hair.hairgg.login.Service.LoginService;
-import hair.hairgg.memberSecond.Dto.MemberSecond;
-import hair.hairgg.memberSecond.Repository.MemberSecondRepository;
+import hair.hairgg.member.Member;
+import hair.hairgg.member.MemberRepository;
 import hair.hairgg.security.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +17,7 @@ import java.util.Optional;
 public class LoginController {
 
     private final LoginService loginService;
-    private final MemberSecondRepository memberSecondRepository;
+    private final MemberRepository memberRepository;
     private final JwtUtil jwtUtil;
 
     @PostMapping("/login")
@@ -25,22 +25,22 @@ public class LoginController {
 
         String accessToken = loginService.getGoogleAccessToken(code);
 
-        MemberSecond userInfo = loginService.getUserInfo(accessToken);
+        Member userInfo = loginService.getUserInfo(accessToken);
         String email = userInfo.getLoginId();
 
-        Optional<MemberSecond> existingMember = memberSecondRepository.findByLoginId(email);
+        Optional<Member> existingMember = memberRepository.findByLoginId(email);
 
         String token = jwtUtil.generateToken(email);
         if (existingMember.isPresent()) {
             return ResponseEntity.ok().body(Map.of("token", token, "isFirstLogin", "false"));
         } else {
-            memberSecondRepository.save(userInfo);
+            memberRepository.save(userInfo);
             return ResponseEntity.ok().body(Map.of("token", token, "isFirstLogin", "true"));
         }
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<MemberSecond> signup(@AuthenticationPrincipal MemberSecond memberDto, @RequestBody MemberSecond member) {
+    public ResponseEntity<Member> signup(@AuthenticationPrincipal Member memberDto, @RequestBody Member member) {
         if (memberDto == null) {
             return ResponseEntity.status(401).body(null);
         }
@@ -49,7 +49,7 @@ public class LoginController {
         memberDto.setGender(member.getGender());
         memberDto.setPhoneNumber(member.getPhoneNumber());
 
-        memberSecondRepository.save(memberDto);
+        memberRepository.save(memberDto);
         return ResponseEntity.ok(memberDto);
     }
 }

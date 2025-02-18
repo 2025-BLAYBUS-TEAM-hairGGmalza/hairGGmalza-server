@@ -1,6 +1,6 @@
 package hair.hairgg.security.jwt;
 
-import hair.hairgg.memberSecond.Repository.MemberSecondRepository;
+import hair.hairgg.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -11,11 +11,11 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private final MemberSecondRepository memberSecondRepository;
+    private final MemberRepository memberRepository;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return memberSecondRepository.findByLoginId(email)
+        return memberRepository.findByLoginId(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
     }
 }
