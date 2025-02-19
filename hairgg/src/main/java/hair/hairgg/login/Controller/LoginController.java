@@ -1,13 +1,18 @@
 package hair.hairgg.login.Controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import hair.hairgg.login.Service.LoginService;
 import hair.hairgg.member.Member;
 import hair.hairgg.member.MemberRepository;
 import hair.hairgg.security.jwt.JwtUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 import java.util.Optional;
@@ -21,7 +26,12 @@ public class LoginController {
     private final JwtUtil jwtUtil;
 
     @PostMapping("/login")
-    public ResponseEntity<?> googleLogin(@RequestParam("code") String code) {
+    public ResponseEntity<?> googleLogin(@RequestBody JsonNode jsonNode) {
+        String code = jsonNode.get("code").asText();
+        if (code == null || code.isEmpty()) {
+            System.out.println("Invalid Google Auth Code");
+            return null;
+        }
 
         String accessToken = loginService.getGoogleAccessToken(code);
 
@@ -30,17 +40,20 @@ public class LoginController {
 
         Optional<Member> existingMember = memberRepository.findByLoginId(email);
 
-        String token = jwtUtil.generateToken(email);
+
         if (existingMember.isPresent()) {
+            String token = jwtUtil.generateToken(email, existingMember.get().getId());
             return ResponseEntity.ok().body(Map.of("token", token, "isFirstLogin", "false"));
         } else {
-            memberRepository.save(userInfo);
+            Member member = memberRepository.save(userInfo);
+            String token = jwtUtil.generateToken(email, member.getId());
             return ResponseEntity.ok().body(Map.of("token", token, "isFirstLogin", "true"));
         }
     }
 
     @PostMapping("/signup")
     public ResponseEntity<Member> signup(@AuthenticationPrincipal Member memberDto, @RequestBody Member member) {
+
         if (memberDto == null) {
             return ResponseEntity.status(401).body(null);
         }
@@ -51,5 +64,17 @@ public class LoginController {
 
         memberRepository.save(memberDto);
         return ResponseEntity.ok(memberDto);
+    }
+
+    @PostMapping("/checkToken")
+    public ResponseEntity<String> sign(HttpServletRequest request ) {
+        Long memberId = (Long) request.getAttribute("id");
+
+        if (memberId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
+        }
+
+        // memberId를 사용해서 로직 처리
+        return ResponseEntity.ok("Success! Member ID: " + memberId);
     }
 }
