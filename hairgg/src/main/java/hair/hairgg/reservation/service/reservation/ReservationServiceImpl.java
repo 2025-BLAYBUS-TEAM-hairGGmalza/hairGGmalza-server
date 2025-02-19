@@ -49,13 +49,6 @@ public class ReservationServiceImpl implements ReservationService {
 		reservationRepository.save(newReservation);
 		PayInfo.PayReadyInfo payInfo = payService.payReady(newReservation);
 		newReservation.updateTid(payInfo.tid());
-		try {
-			String url=calendarService.createEvent(newReservation.getReservationDate(),"dnfldpden32@gmail.com", newReservation.getId());
-			newReservation.updateMeetUrl(url);
-		}catch (Exception e){
-			log.error(e.getMessage());
-			throw new ReservationError(ErrorCode.CALENDAR_EVENT_CREATE_ERROR);
-		}
 		reservationRepository.save(newReservation);
 		return payInfo;
 	}
@@ -69,6 +62,13 @@ public class ReservationServiceImpl implements ReservationService {
 		// 예약 상태 변경
 		reservation.updatePaymentInfo(payInfo.approved_at());
 		reservation.changeState(ReservationState.PAYMENT_COMPLETED);
+		try {
+			String url=calendarService.createEvent(reservation.getReservationDate(),"dnfldpden32@gmail.com", reservation.getId());
+			reservation.updateMeetUrl(url);
+		}catch (Exception e){
+			log.error(e.getMessage());
+			throw new ReservationError(ErrorCode.CALENDAR_EVENT_CREATE_ERROR);
+		}
 		return reservationRepository.save(reservation);
 	}
 
