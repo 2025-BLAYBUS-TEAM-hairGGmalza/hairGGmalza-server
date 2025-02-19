@@ -25,7 +25,6 @@ public class FavoriteController {
             @RequestParam("designerId") Long designerId
     ) {
         Long memberId = (Long) request.getAttribute("id");
-        System.out.println("memberId = " + memberId);
         Long favoriteId = favoriteService.checkFavoriteDesigner(memberId, designerId);
 
         return ApiResponse.success("디자이너 찜 결과 반환", FavoriteConverter.toFavoriteResponse(designerId, favoriteId));

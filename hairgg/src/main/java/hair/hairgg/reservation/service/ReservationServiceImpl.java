@@ -41,9 +41,9 @@ public class ReservationServiceImpl implements ReservationService {
 
 	@Transactional
 	@Override
-	public PayInfo.PayReadyInfo createReservation(ReservationReqDto.ReservationRequest request) {
+	public PayInfo.PayReadyInfo createReservation(Long memberId,ReservationReqDto.@Valid ReservationRequest request) {
 		validateCreateReservation(request);
-		Member member = memberService.findById(request.memberId());
+		Member member = memberService.findById(memberId);
 		Designer designer = designerService.getDesignerById(request.designerId());
 		int price = designer.getPriceByMeetingType(request.meetingType());
 		Reservation newReservation = ReservationConverter.toEntity(request, price, member, designer);
@@ -56,13 +56,23 @@ public class ReservationServiceImpl implements ReservationService {
 
 	@Transactional
 	@Override
-	public Reservation createReservationForTransfer(ReservationReqDto.@Valid ReservationRequest request) {
+	public Reservation createReservationForTransfer(Long memberId,ReservationReqDto.@Valid ReservationRequest request) {
 		validateCreateReservation(request);
-		Member member = memberService.findById(request.memberId());
+		Member member = memberService.findById(memberId);
 		Designer designer = designerService.getDesignerById(request.designerId());
 		int price = designer.getPriceByMeetingType(request.meetingType());
 		Reservation newReservation = ReservationConverter.toEntity(request, price, member, designer);
-		return reservationRepository.save(newReservation);
+		Reservation savedReservation= reservationRepository.save(newReservation);
+		if(savedReservation.getMeetingType().equals(MeetingType.ONLINE)) {
+			try {
+				String url=calendarService.createEvent(savedReservation.getReservationDate(),"dnfldpden32@gmail.com", savedReservation.getId());
+				savedReservation.updateMeetUrl(url);
+			}catch (Exception e){
+				log.error(e.getMessage());
+				throw new ReservationError(ErrorCode.CALENDAR_EVENT_CREATE_ERROR);
+			}
+		}
+		return reservationRepository.save(savedReservation);
 	}
 
 	@Transactional
@@ -101,7 +111,6 @@ public class ReservationServiceImpl implements ReservationService {
 	@Transactional(readOnly = true)
 	@Override
 	public List<Reservation> getReservationByMemberId(Long memberId) {
-		//TODO:member 있는지 확인 필요
 		return reservationRepository.findByMember_IdOrderByReservationDate(memberId);
 	}
 

@@ -10,7 +10,7 @@ import hair.hairgg.pay.PayInfo;
 import jakarta.validation.Valid;
 
 public interface ReservationService {
-	PayInfo.PayReadyInfo createReservation(ReservationReqDto.ReservationRequest request);
+	PayInfo.PayReadyInfo createReservation(Long memberId,ReservationReqDto.ReservationRequest request);
 
 	Reservation payApprove(Long reservationId, String pgToken);
 
@@ -22,5 +22,5 @@ public interface ReservationService {
 
 	Reservation getReservationById(Long reservationId);
 
-	Reservation createReservationForTransfer(ReservationReqDto.@Valid ReservationRequest request);
+	Reservation createReservationForTransfer(Long memberId,ReservationReqDto.@Valid ReservationRequest request);
 }
