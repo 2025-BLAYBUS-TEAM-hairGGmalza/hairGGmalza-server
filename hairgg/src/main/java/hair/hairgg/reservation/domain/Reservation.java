@@ -20,7 +20,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Entity
 @RequiredArgsConstructor
 @AllArgsConstructor
@@ -64,6 +66,10 @@ public class Reservation {
 	public Reservation(LocalDateTime reservationDate, MeetingType meetingType, Designer designer, Member member,
 		int price, PaymentMethod paymentMethod,String message, String refundAccountNumber,String refundAccountBank) {
 		if (reservationDate == null || meetingType == null || designer == null || member == null) {
+			log.error("예약 생성 실패: {}", reservationDate);
+			log.error("예약 생성 실패: {}", meetingType);
+			log.error("예약 생성 실패: {}", designer);
+			log.error("예약 생성 실패: {}", member);
 			throw new ReservationError(ErrorCode.INVALID_INPUT_VALUE);
 		}
 		if(paymentMethod.equals(PaymentMethod.TRANSFER) && refundAccountNumber == null && refundAccountBank == null){
