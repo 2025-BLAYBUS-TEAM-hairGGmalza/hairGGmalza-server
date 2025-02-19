@@ -35,10 +35,26 @@ public class Designer {
 
     private String portfolio1;
     private String portfolio2;
-    
+
+    @Column(nullable = false)
+    private int favoriteCount = 0;
+
     @OneToMany(mappedBy = "designer", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @Builder.Default
     private List<DesignerMajor> designerMajors = new ArrayList<>();
+
+    @PrePersist
+    public void prePersist() {
+        this.favoriteCount = 0;
+    }
+
+    public void addFavorite() {
+        this.favoriteCount++;
+    }
+
+    public void deleteFavorite() {
+        this.favoriteCount--;
+    }
 
     public void addDesignerMajor(DesignerMajor designerMajor) {
         this.designerMajors.add(designerMajor);

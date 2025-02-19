@@ -13,7 +13,9 @@ import java.util.List;
 public class DesignerConverter {
 
     public static DesignerInfo toDesignerInfo(Designer designer) {
-        List<Major> majors = designer.getDesignerMajors().stream().map(DesignerMajor::getMajor).toList();
+        List<String> majors = designer.getDesignerMajors().stream().map(
+                designerMajor -> designerMajor.getMajor().getName()
+        ).toList();
 
         return DesignerInfo.builder()
                 .designerId(designer.getId())
@@ -28,6 +30,7 @@ public class DesignerConverter {
                 .onlinePrice(designer.getOnlinePrice())
                 .meetingType(designer.getMeetingType())
                 .majors(majors)
+                .favoriteCount(designer.getFavoriteCount())
                 .build();
     }
 
