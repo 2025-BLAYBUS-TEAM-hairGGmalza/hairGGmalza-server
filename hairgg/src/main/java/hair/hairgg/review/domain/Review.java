@@ -1,6 +1,7 @@
 package hair.hairgg.review.domain;
 
 import hair.hairgg.designer.domain.Designer;
+import hair.hairgg.member.Member;
 import hair.hairgg.reservation.domain.Reservation;
 import jakarta.persistence.*;
 import lombok.*;
@@ -27,6 +28,11 @@ public class Review {
     @JoinColumn(name = "designerId")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Designer designer;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "memberId")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Member member;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reservationId")

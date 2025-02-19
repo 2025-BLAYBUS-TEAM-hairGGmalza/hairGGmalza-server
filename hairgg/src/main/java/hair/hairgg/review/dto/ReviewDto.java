@@ -11,6 +11,9 @@ public class ReviewDto {
     public record ReviewInfo(
             Long reviewId,
             Long reservationId,
+            String name,
+            String email,
+            String profile,
             String review,
             int score,
             LocalDate createdDate,
