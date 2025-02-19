@@ -3,6 +3,7 @@ package hair.hairgg.reservation.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -53,6 +54,7 @@ public class ReservationServiceImpl implements ReservationService {
 		return payInfo;
 	}
 
+	@Transactional
 	@Override
 	public Reservation createReservationForTransfer(ReservationReqDto.@Valid ReservationRequest request) {
 		validateCreateReservation(request);
@@ -120,7 +122,6 @@ public class ReservationServiceImpl implements ReservationService {
 
 	}
 
-
 	private void validateValidTimes(Long designerId, LocalDate reservationDate) {
 		if (reservationDate.isBefore(LocalDate.now())) {
 			throw new ReservationError(ErrorCode.RESERVATION_TIME_PAST);
@@ -155,8 +156,8 @@ public class ReservationServiceImpl implements ReservationService {
 	}
 
 	private boolean isTimeAlreadyBooked(Long designerId, LocalDateTime reservationTime) {
-		return !reservationRepository.findByDesigner_IdAndReservationDateAndReservationState(designerId,
+		return !reservationRepository.findByDesigner_IdAndReservationDateAndReservationStateIn(designerId,
 			reservationTime,
-			ReservationState.PAYMENT_COMPLETED).isEmpty();
+			Arrays.asList(ReservationState.WAITING,ReservationState.PAYMENT_COMPLETED)).isEmpty();
 	}
 }

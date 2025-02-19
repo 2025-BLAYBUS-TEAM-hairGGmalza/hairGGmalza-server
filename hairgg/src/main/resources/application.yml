@@ -20,30 +20,6 @@ spring:
       platform: mysql
       encoding: UTF-8
 
-  security:
-    oauth2:
-      client:
-        registration:
-          google:
-            client-id: 541500219001-ftaggvf5pl3u4cbmr8fe0dq4rdm2bnv4.apps.googleusercontent.com
-            client-secret: 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
-            scope: profile, email
-            redirect-uri: "http://localhost:8080/loginAuth"
-        provider:
-          google:
-            authorization-uri: https://accounts.google.com/o/oauth2/auth
-            token-uri: https://oauth2.googleapis.com/token
-            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
-            user-name-attribute: sub
-
-jwt:
-  secret: "irFIRZR/CjAkHf7h58YprXJ8fStj0P9iP43fEVpJCAE="
-
-kakao:
-  pay:
-    base-url: http://localhost:8080 #추후 프론트 배포 서버로 변경
-    secret-key: DEVF0DCC87ADBAAC86BC82BC175BE564ECF4DD96
-    cid: TC0ONETIME
 
 server:
   port: 8080
@@ -52,13 +28,3 @@ server:
       charset: UTF-8
       enabled: true
       force: true
-google:
-  calendar:
-    client-id: "541500219001-0rs09sf1kal2ub9jikqinq29sk0d23hd.apps.googleusercontent.com"
-    project-id: "hairggmalja"
-    auth-uri: "https://accounts.google.com/o/oauth2/auth"
-    token-uri: "https://oauth2.googleapis.com/token"
-    client-secret: "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"
-    auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs"
-    redirect-uris: "http://localhost,https://hairgg.duckdns.org"
-    tokens-directory: "tokens"

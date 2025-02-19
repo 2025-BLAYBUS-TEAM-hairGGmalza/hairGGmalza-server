@@ -15,8 +15,8 @@ import hair.hairgg.reservation.domain.ReservationState;
 
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
-	List<Reservation> findByDesigner_IdAndReservationDateAndReservationState(Long designerId,
-		LocalDateTime reservationDate, ReservationState reservationState);
+	List<Reservation> findByDesigner_IdAndReservationDateAndReservationStateIn(Long designerId,
+		LocalDateTime reservationDate, List<ReservationState> reservationStates);
 
 	@Query("SELECT r "
 		+ "FROM Reservation r "
