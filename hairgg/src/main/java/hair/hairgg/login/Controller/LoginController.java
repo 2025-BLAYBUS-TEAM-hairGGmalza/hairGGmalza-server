@@ -9,7 +9,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -45,29 +44,26 @@ public class LoginController {
             String token = jwtUtil.generateToken(email, existingMember.get().getId());
             return ResponseEntity.ok().body(Map.of("token", token, "isFirstLogin", "false"));
         } else {
-            Member member = memberRepository.save(userInfo);
-            String token = jwtUtil.generateToken(email, member.getId());
-            return ResponseEntity.ok().body(Map.of("token", token, "isFirstLogin", "true"));
+            String token = jwtUtil.generateToken(email, 0L);
+            return ResponseEntity.ok().body(Map.of("token", token, "userInfo", userInfo, "isFirstLogin", "true"));
         }
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<Member> signup(@AuthenticationPrincipal Member memberDto, @RequestBody Member member) {
+    public ResponseEntity<?> signup(HttpServletRequest request, @RequestBody Member member) {
+        Long memberId = (Long) request.getAttribute("id");
 
-        if (memberDto == null) {
-            return ResponseEntity.status(401).body(null);
-        }
+        if(!memberId.equals(0L)) return null;
 
-        memberDto.setNickname(member.getNickname());
-        memberDto.setGender(member.getGender());
-        memberDto.setPhoneNumber(member.getPhoneNumber());
+        Member newMember = memberRepository.save(member);
 
-        memberRepository.save(memberDto);
-        return ResponseEntity.ok(memberDto);
+        String token = jwtUtil.generateToken(newMember.getLoginId(), newMember.getId());
+
+        return ResponseEntity.ok().body(Map.of("token", token));
     }
 
     @PostMapping("/checkToken")
-    public ResponseEntity<String> sign(HttpServletRequest request ) {
+    public ResponseEntity<String> sign(HttpServletRequest request) {
         Long memberId = (Long) request.getAttribute("id");
 
         if (memberId == null) {
