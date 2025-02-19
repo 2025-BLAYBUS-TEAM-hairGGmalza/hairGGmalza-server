@@ -2,7 +2,6 @@ package hair.hairgg.designer.service;
 
 import hair.hairgg.designer.domain.Designer;
 import hair.hairgg.designer.dto.SearchFilterDto;
-import hair.hairgg.designer.repository.DesignerMajorRepository;
 import hair.hairgg.designer.repository.DesignerRepository;
 import hair.hairgg.exception.ErrorCode;
 import hair.hairgg.exception.custom.DesignerError;
@@ -19,12 +18,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class DesignerServiceImpl implements DesignerService {
 
     private final DesignerRepository designerRepository;
-    private final DesignerMajorRepository designerMajorRepository;
 
     @Override
     @Transactional(readOnly = true)
     public Designer getDesignerById(Long designerId) {
-        return designerRepository.findById(designerId).orElseThrow(
+        return designerRepository.findByDesignerId(designerId).orElseThrow(
                 () -> new DesignerError(ErrorCode.DESIGNER_NOT_FOUND)
         );
     }
