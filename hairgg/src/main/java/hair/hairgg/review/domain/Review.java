@@ -1,12 +1,14 @@
 package hair.hairgg.review.domain;
 
 import hair.hairgg.designer.domain.Designer;
+import hair.hairgg.member.Member;
 import hair.hairgg.reservation.domain.Reservation;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +30,11 @@ public class Review {
     private Designer designer;
 
     @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "memberId")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Member member;
+
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reservationId")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Reservation reservation;
@@ -37,6 +44,8 @@ public class Review {
 
     @Column(nullable = false)
     private Integer score;
+
+    private LocalDate createdDate;
 
     @OneToMany(mappedBy = "review", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @Builder.Default
