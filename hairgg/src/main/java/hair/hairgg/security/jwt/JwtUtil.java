@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.Map;
 
 @Component
 public class JwtUtil {
@@ -14,12 +15,12 @@ public class JwtUtil {
     @Value("${jwt.secret}")
     private String secretKey;
 
-    public String generateToken(String email, Long id) {
-
+    public String generateToken(Map<String, Object> claims, Long id) {
         long EXPIRATION_TIME = 1000 * 60 * 60 * 24;
+
         return Jwts.builder()
-                .setSubject(email)
-                .claim("id", id) // JWT에 id 저장
+                .setClaims(claims)
+                .claim("id", id)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(SignatureAlgorithm.HS256, secretKey)
@@ -33,8 +34,8 @@ public class JwtUtil {
                 .getBody();
     }
 
-    public String getEmailFromToken(String token) {
-        return extractClaims(token).getSubject();
+    public Map<String, Object> getClaimsFromToken(String token) {
+        return extractClaims(token);
     }
 
     public Long getIdFromToken(String token) {
