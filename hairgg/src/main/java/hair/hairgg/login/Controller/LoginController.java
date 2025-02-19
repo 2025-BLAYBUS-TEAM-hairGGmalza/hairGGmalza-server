@@ -2,7 +2,7 @@ package hair.hairgg.login.Controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import hair.hairgg.login.Service.LoginService;
-import hair.hairgg.memberㅎ.Member;
+import hair.hairgg.member.Member;
 import hair.hairgg.member.MemberRepository;
 import hair.hairgg.security.jwt.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
