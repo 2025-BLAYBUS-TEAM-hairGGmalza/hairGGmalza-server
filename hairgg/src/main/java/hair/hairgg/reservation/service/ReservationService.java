@@ -7,6 +7,7 @@ import java.util.List;
 import hair.hairgg.reservation.ReservationReqDto;
 import hair.hairgg.reservation.domain.Reservation;
 import hair.hairgg.pay.PayInfo;
+import jakarta.validation.Valid;
 
 public interface ReservationService {
 	PayInfo.PayReadyInfo createReservation(ReservationReqDto.ReservationRequest request);
@@ -20,4 +21,6 @@ public interface ReservationService {
 	Reservation payCancel(Long reservationId);
 
 	Reservation getReservationById(Long reservationId);
+
+	Reservation createReservationForTransfer(ReservationReqDto.@Valid ReservationRequest request);
 }

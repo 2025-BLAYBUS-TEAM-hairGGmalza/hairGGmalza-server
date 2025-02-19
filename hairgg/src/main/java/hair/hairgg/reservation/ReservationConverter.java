@@ -16,7 +16,11 @@ public class ReservationConverter {
 			.member(member)
 			.designer(designer)
 			.meetingType(request.meetingType())
-			.price(price)//TODO:디자이너의 가격을 가져와야함
+			.paymentMethod(request.paymentMethod())
+			.message(request.message())
+			.refundAccountBank(request.refundAccountBank())
+			.refundAccountNumber(request.refundAccountNumber())
+			.price(price)
 			.reservationDate(request.reservationDate())
 			.build();
 	}

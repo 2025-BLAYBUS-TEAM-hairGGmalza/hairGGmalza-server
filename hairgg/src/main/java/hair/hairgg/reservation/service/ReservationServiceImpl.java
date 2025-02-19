@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import hair.hairgg.calendar.service.CalendarService;
 import hair.hairgg.designer.domain.Designer;
+import hair.hairgg.designer.domain.MeetingType;
 import hair.hairgg.designer.service.DesignerService;
 import hair.hairgg.exception.ErrorCode;
 import hair.hairgg.exception.custom.ReservationError;
@@ -22,6 +23,7 @@ import hair.hairgg.reservation.domain.Reservation;
 import hair.hairgg.reservation.domain.ReservationState;
 import hair.hairgg.pay.PayInfo;
 import hair.hairgg.pay.PayService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -51,21 +53,32 @@ public class ReservationServiceImpl implements ReservationService {
 		return payInfo;
 	}
 
+	@Override
+	public Reservation createReservationForTransfer(ReservationReqDto.@Valid ReservationRequest request) {
+		validateCreateReservation(request);
+		Member member = memberService.findById(request.memberId());
+		Designer designer = designerService.getDesignerById(request.designerId());
+		int price = designer.getPriceByMeetingType(request.meetingType());
+		Reservation newReservation = ReservationConverter.toEntity(request, price, member, designer);
+		return reservationRepository.save(newReservation);
+	}
+
 	@Transactional
 	@Override
 	public Reservation payApprove(Long reservationId, String pgToken) {
 		Reservation reservation = reservationRepository.findById(reservationId)
 			.orElseThrow(() -> new ReservationError(ErrorCode.RESERVATION_NOT_FOUND));
 		PayInfo.PayApproveInfo payInfo = payService.payApprove(reservation, pgToken);
-		// 예약 상태 변경
 		reservation.updatePaymentInfo(payInfo.approved_at());
 		reservation.changeState(ReservationState.PAYMENT_COMPLETED);
-		try {
-			String url=calendarService.createEvent(reservation.getReservationDate(),"dnfldpden32@gmail.com", reservation.getId());
-			reservation.updateMeetUrl(url);
-		}catch (Exception e){
-			log.error(e.getMessage());
-			throw new ReservationError(ErrorCode.CALENDAR_EVENT_CREATE_ERROR);
+		if(reservation.getMeetingType().equals(MeetingType.ONLINE)) {
+			try {
+				String url=calendarService.createEvent(reservation.getReservationDate(),"dnfldpden32@gmail.com", reservation.getId());
+				reservation.updateMeetUrl(url);
+			}catch (Exception e){
+				log.error(e.getMessage());
+				throw new ReservationError(ErrorCode.CALENDAR_EVENT_CREATE_ERROR);
+			}
 		}
 		return reservationRepository.save(reservation);
 	}
