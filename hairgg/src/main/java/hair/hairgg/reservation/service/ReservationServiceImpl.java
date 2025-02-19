@@ -1,4 +1,4 @@
-package hair.hairgg.reservation.service.reservation;
+package hair.hairgg.reservation.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -18,12 +18,10 @@ import hair.hairgg.member.MemberService;
 import hair.hairgg.reservation.ReservationConverter;
 import hair.hairgg.reservation.ReservationReqDto;
 import hair.hairgg.reservation.ReservationRepository;
-import hair.hairgg.reservation.ReservationResDto;
 import hair.hairgg.reservation.domain.Reservation;
 import hair.hairgg.reservation.domain.ReservationState;
-import hair.hairgg.reservation.service.ValidTimeManager;
-import hair.hairgg.reservation.service.pay.PayInfo;
-import hair.hairgg.reservation.service.pay.PayService;
+import hair.hairgg.pay.PayInfo;
+import hair.hairgg.pay.PayService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

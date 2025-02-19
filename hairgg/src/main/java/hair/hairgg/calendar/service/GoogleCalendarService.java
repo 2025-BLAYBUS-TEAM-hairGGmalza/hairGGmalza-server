@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.api.client.auth.oauth2.Credential;
@@ -31,32 +32,37 @@ import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.EventAttendee;
 import com.google.api.services.calendar.model.EventDateTime;
 
+import hair.hairgg.calendar.GoogleCalendarConfig;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
 public class GoogleCalendarService implements CalendarService {
 
-	private static final String APPLICATION_NAME = "hairggmalja";
 	private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
-	private static final String CREDENTIALS_FILE_PATH = "/google-calendar.json";
-	private static final String TOKENS_DIRECTORY_PATH = "tokens";
-	private static final List<String> SCOPES = Arrays.asList(CalendarScopes.CALENDAR_EVENTS,CalendarScopes.CALENDAR_EVENTS);
+	private static final List<String> SCOPES = Arrays.asList(CalendarScopes.CALENDAR_EVENTS,
+		CalendarScopes.CALENDAR_EVENTS);
+	private final GoogleCalendarConfig googleCalendarConfig;
 
-	private static Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT)
+	@Autowired
+	public GoogleCalendarService(GoogleCalendarConfig googleCalendarConfig) {
+		this.googleCalendarConfig = googleCalendarConfig;
+	}
+
+
+	private Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT)
 		throws IOException {
 
-		InputStream in = GoogleCalendarService.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
-		if (in == null) {
-			throw new FileNotFoundException("Resource not found: " + CREDENTIALS_FILE_PATH);
-		}
-		GoogleClientSecrets clientSecrets =
-			GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
-		log.info("clientSecrets : {}", clientSecrets);
+		GoogleClientSecrets.Details details = new GoogleClientSecrets.Details()
+			.setClientId(googleCalendarConfig.getClientId())
+			.setClientSecret(googleCalendarConfig.getClientSecret())
+			.setRedirectUris(googleCalendarConfig.getRedirectUris());
+
+		GoogleClientSecrets clientSecrets = new GoogleClientSecrets().setInstalled(details);
 
 		GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
 			HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES)
-			.setDataStoreFactory(new FileDataStoreFactory(new java.io.File(TOKENS_DIRECTORY_PATH)))
+			.setDataStoreFactory(new FileDataStoreFactory(new java.io.File(googleCalendarConfig.getTokenDir())))
 			.setAccessType("offline")
 			.build();
 		log.info("flow : {}", flow);
@@ -109,7 +115,7 @@ public class GoogleCalendarService implements CalendarService {
 	private Calendar getCalendarService() throws GeneralSecurityException, IOException {
 		final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
 		return new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
-			.setApplicationName(APPLICATION_NAME)
+			.setApplicationName(googleCalendarConfig.getApplicationName())
 			.build();
 	}
 }
