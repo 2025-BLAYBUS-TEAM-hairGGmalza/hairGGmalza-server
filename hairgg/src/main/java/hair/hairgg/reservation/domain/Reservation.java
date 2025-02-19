@@ -81,4 +81,8 @@ public class Reservation {
 	public void updateTid(String tid) {
 		this.tid = tid;
 	}
+
+	public void updateMeetUrl(String url) {
+		this.meetUrl = url;
+	}
 }

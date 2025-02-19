@@ -1,8 +1,6 @@
-package hair.hairgg.reservation.service.pay;
+package hair.hairgg.pay;
 
 import java.time.LocalDateTime;
-
-import lombok.Getter;
 
 public class PayInfo {
 	public record PayReadyInfo(String tid, String next_redirect_pc_url) {

@@ -1,6 +1,5 @@
-package hair.hairgg.reservation.service.pay;
+package hair.hairgg.pay;
 
-import hair.hairgg.reservation.ReservationResDto;
 import hair.hairgg.reservation.domain.Reservation;
 
 public interface PayService {
