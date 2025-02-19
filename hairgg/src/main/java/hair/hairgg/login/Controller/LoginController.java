@@ -65,7 +65,7 @@ public class LoginController {
         String token = request.getHeader("Authorization").substring(7);
         Claims claims = jwtUtil.extractClaims(token);
 
-        member.setLoginId(claims.get("googleId", String.class));
+        member.setLoginId(claims.get("loginId", String.class));
         member.setProfileUrl(claims.get("profileUrl", String.class));
         member.setGoogleId(claims.get("googleId", String.class));
 

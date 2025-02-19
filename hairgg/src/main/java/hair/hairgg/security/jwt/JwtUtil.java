@@ -42,6 +42,10 @@ public class JwtUtil {
         return extractClaims(token).get("id", Long.class);
     }
 
+    public String getEmailFromToken(String token) {
+        return extractClaims(token).get("loginId", String.class);
+    }
+
     public boolean validateToken(String token) {
         try {
             return !extractClaims(token).getExpiration().before(new Date());
