@@ -36,7 +36,7 @@ public class Reservation {
 	private ReservationState reservationState;
 	@Column(nullable = false)
 	private MeetingType meetingType;
-	@Column(nullable = false)
+	@Column
 	private String meetUrl;
 	@Column(nullable = false)
 	private int price;
@@ -46,6 +46,12 @@ public class Reservation {
 	private PaymentMethod paymentMethod;
 	@Column
 	private String tid;
+	@Column
+	private String refundAccountBank;
+	@Column
+	private String refundAccountNumber;
+	@Column
+	private String message;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "designerId")
@@ -56,17 +62,23 @@ public class Reservation {
 
 	@Builder
 	public Reservation(LocalDateTime reservationDate, MeetingType meetingType, Designer designer, Member member,
-		int price) {
+		int price, PaymentMethod paymentMethod,String message, String refundAccountNumber,String refundAccountBank) {
 		if (reservationDate == null || meetingType == null || designer == null || member == null) {
 			throw new ReservationError(ErrorCode.INVALID_INPUT_VALUE);
+		}
+		if(paymentMethod.equals(PaymentMethod.TRANSFER) && refundAccountNumber == null && refundAccountBank == null){
+			throw new ReservationError(ErrorCode.REFUND_ACCOUNT_NUMBER_REQUIRED);
 		}
 		this.reservationDate = reservationDate;
 		this.meetingType = meetingType;
 		this.price = price;
 		this.designer = designer;
 		this.member = member;
+		this.paymentMethod = paymentMethod;
+		this.message = message;
+		this.refundAccountBank = refundAccountBank;
+		this.refundAccountNumber = refundAccountNumber;
 		this.reservationState = ReservationState.WAITING;
-		this.meetUrl= "https://meet.google.com/landing";
 	}
 
 	public void changeState(ReservationState state) {
@@ -75,7 +87,6 @@ public class Reservation {
 
 	public void updatePaymentInfo(LocalDateTime approvedAt) {
 		this.paymentAt = approvedAt;
-		paymentMethod = PaymentMethod.KAKAO_PAY;
 	}
 
 	public void updateTid(String tid) {

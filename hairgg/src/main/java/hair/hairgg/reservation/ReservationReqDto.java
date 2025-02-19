@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import hair.hairgg.designer.domain.MeetingType;
 import hair.hairgg.designer.dto.DesignerDto;
 import hair.hairgg.reservation.domain.ReservationState;
+import hair.hairgg.reservation.domain.pay.PaymentMethod;
 import jakarta.validation.constraints.NotNull;
 
 public class ReservationReqDto {
@@ -16,8 +17,13 @@ public class ReservationReqDto {
 		Long designerId,
 		@NotNull(message = "예약 타입은 필수 입력값입니다.")
 		MeetingType meetingType,
-		@NotNull(message = "예약 날짜는 필수 입력값입니다.")
-		LocalDateTime reservationDate
+		@NotNull(message = "예약 시간은 필수 입력값입니다.")
+		LocalDateTime reservationDate,
+		String message,
+		@NotNull(message = "결제 수단은 필수 입력값입니다.")
+		PaymentMethod paymentMethod,
+		String refundAccountBank,
+		String refundAccountNumber
 	) {
 	}
 }
