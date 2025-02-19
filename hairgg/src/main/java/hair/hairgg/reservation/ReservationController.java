@@ -30,7 +30,7 @@ public class ReservationController {
 	public ApiResponse<PayInfo.PayReadyInfo> createReservation(
 		@Valid @RequestBody ReservationReqDto.ReservationRequest request) {
 		PayInfo.PayReadyInfo payInfo = reservationService.createReservation(request);
-		return ApiResponse.success("결제 요청 URL 발급 성공", payInfo);
+		return ApiResponse.success("결제 요청 성공", payInfo);
 	}
 
 	@GetMapping("/{reservationId}/pay/completed")
