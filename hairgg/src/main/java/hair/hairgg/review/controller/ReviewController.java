@@ -20,9 +20,9 @@ public class ReviewController {
     @GetMapping("")
     public ApiResponse<ReviewInfos> getReviewsByDesignerId(
             @RequestParam(name = "page", defaultValue = "0") Integer page,
-            @RequestBody ReviewRequest request
+            @RequestParam("designerId") Long designerId
     ) {
-        Page<Review> reviews = reviewService.getReviewsByDesignerId(page, request.getDesignerId());
+        Page<Review> reviews = reviewService.getReviewsByDesignerId(page, designerId);
 
         return ApiResponse.success("리뷰 목록 조회 성공", ReviewConverter.toReviewInfoList(reviews));
     }
