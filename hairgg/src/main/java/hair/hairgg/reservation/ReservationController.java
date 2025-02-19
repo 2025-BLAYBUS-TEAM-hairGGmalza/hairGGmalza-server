@@ -67,9 +67,10 @@ public class ReservationController {
 
 	@GetMapping
 	public ApiResponse<List<ReservationResDto.ReservationDetailInfo>> getReservationByMemberId(
-		@RequestParam Long memberId) {//TODO: 추후 토큰에서 가져오기
+		HttpServletRequest servletRequest) {
+		Long memberId = (Long) servletRequest.getAttribute("id");
 		List<Reservation> reservations = reservationService.getReservationByMemberId(memberId);
-		return ApiResponse.success("특정 멤버의 예약 조회 성공", ReservationConverter.toReservationDetailInfoList(reservations));
+		return ApiResponse.success("로그인 유저의 예약 조회 성공", ReservationConverter.toReservationDetailInfoList(reservations));
 	}
 
 	@GetMapping("/{reservationId}")
