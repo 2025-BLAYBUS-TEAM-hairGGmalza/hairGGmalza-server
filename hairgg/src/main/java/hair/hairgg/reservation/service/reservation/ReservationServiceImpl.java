@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import hair.hairgg.calendar.service.CalendarService;
 import hair.hairgg.designer.domain.Designer;
 import hair.hairgg.designer.service.DesignerService;
 import hair.hairgg.exception.ErrorCode;
@@ -35,6 +36,7 @@ public class ReservationServiceImpl implements ReservationService {
 	private final PayService payService;
 	private final MemberService memberService;
 	private final DesignerService designerService;
+	private final CalendarService calendarService;
 
 	@Transactional
 	@Override
@@ -47,6 +49,13 @@ public class ReservationServiceImpl implements ReservationService {
 		reservationRepository.save(newReservation);
 		PayInfo.PayReadyInfo payInfo = payService.payReady(newReservation);
 		newReservation.updateTid(payInfo.tid());
+		try {
+			String url=calendarService.createEvent(newReservation.getReservationDate(),"dnfldpden32@gmail.com", newReservation.getId());
+			newReservation.updateMeetUrl(url);
+		}catch (Exception e){
+			log.error(e.getMessage());
+			throw new ReservationError(ErrorCode.CALENDAR_EVENT_CREATE_ERROR);
+		}
 		reservationRepository.save(newReservation);
 		return payInfo;
 	}
