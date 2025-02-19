@@ -18,6 +18,7 @@ public class ReviewConverter {
                 .reservationId(review.getReservation().getId())
                 .review(review.getReview())
                 .score(review.getScore())
+                .createdDate(review.getCreatedDate())
                 .imageUrls(imageUrls)
                 .build();
     }

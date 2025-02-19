@@ -2,6 +2,7 @@ package hair.hairgg.review.dto;
 
 import lombok.Builder;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class ReviewDto {
@@ -12,6 +13,7 @@ public class ReviewDto {
             Long reservationId,
             String review,
             int score,
+            LocalDate createdDate,
             List<String> imageUrls
     ) {
     }
