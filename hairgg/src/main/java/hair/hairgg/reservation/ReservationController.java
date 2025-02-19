@@ -21,7 +21,9 @@ import hair.hairgg.reservation.domain.pay.PaymentMethod;
 import hair.hairgg.reservation.service.ReservationServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @RequestMapping("/reservation")
 @RequiredArgsConstructor
@@ -40,7 +42,8 @@ public class ReservationController {
 			PayInfo.PayReadyInfo payInfo = reservationService.createReservation(request);
 			return ApiResponse.success("결제 요청 성공", payInfo);
 		}
-		throw new ReservationError(ErrorCode.INVALID_INPUT_VALUE);
+		log.info("예약 요청 실패: {}", request.paymentMethod());
+		throw new ReservationError(ErrorCode.INVALID_INPUT_VALUE_PAYMENT_METHOD);
 	}
 
 	@GetMapping("/{reservationId}/pay/completed")

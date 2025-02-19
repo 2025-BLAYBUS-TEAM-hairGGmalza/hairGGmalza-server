@@ -24,6 +24,7 @@ public enum ErrorCode {
 	RESERVATION_TIME_TOO_FAR(400, "R006", "예약은 3개월 이내로 가능합니다."),
 	REFUND_ACCOUNT_NUMBER_REQUIRED(400, "R007", "환불 계좌번호가 필요합니다."),
 	CALENDAR_EVENT_CREATE_ERROR(500, "R008", "google측 오류로 meet url 생성에 실패했습니다."),
+	INVALID_INPUT_VALUE_PAYMENT_METHOD(400, "R009", "결제 방식이 올바르지 않습니다."),
 
 	//designer
 	DESIGNER_NOT_FOUND(404, "D001", "디자이너를 찾을 수 없습니다."),
