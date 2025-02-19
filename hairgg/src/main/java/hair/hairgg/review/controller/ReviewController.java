@@ -4,11 +4,13 @@ import hair.hairgg.apiPayLoad.ApiResponse;
 import hair.hairgg.review.converter.ReviewConverter;
 import hair.hairgg.review.domain.Review;
 import hair.hairgg.review.dto.ReviewDto.ReviewInfos;
-import hair.hairgg.review.dto.ReviewRequest;
 import hair.hairgg.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/reviews")
