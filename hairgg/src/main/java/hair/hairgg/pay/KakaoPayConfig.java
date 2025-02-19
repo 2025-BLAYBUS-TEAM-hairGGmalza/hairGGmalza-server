@@ -1,10 +1,10 @@
-package hair.hairgg.reservation.service.pay;
+package hair.hairgg.pay;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 public class KakaoPayConfig {
@@ -17,9 +17,8 @@ public class KakaoPayConfig {
 	@Value("${kakao.pay.cid}")
 	private String cid;
 
-	// @Value("${kakao.pay.base-url}")
-
-	private String baseUrl="http://localhost:3000";
+	@Value("${kakao.pay.base-url}")
+	private String baseUrl;
 
 	public String getApprovalUrl(Long reservationId) {
 		return baseUrl + "/test/"+reservationId;

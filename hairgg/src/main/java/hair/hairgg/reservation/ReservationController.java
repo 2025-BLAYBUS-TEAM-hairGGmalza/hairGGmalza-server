@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import hair.hairgg.apiPayLoad.ApiResponse;
 import hair.hairgg.reservation.domain.Reservation;
-import hair.hairgg.reservation.service.pay.PayInfo;
-import hair.hairgg.reservation.service.reservation.ReservationServiceImpl;
+import hair.hairgg.pay.PayInfo;
+import hair.hairgg.reservation.service.ReservationServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 

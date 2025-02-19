@@ -10,6 +10,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import hair.hairgg.calendar.GoogleCalendarConfig;
+import hair.hairgg.calendar.service.GoogleCalendarService;
 import hair.hairgg.designer.domain.MeetingType;
 import hair.hairgg.exception.custom.ReservationError;
 import hair.hairgg.mock.designer.MockDesignerService;
@@ -18,8 +20,8 @@ import hair.hairgg.mock.reservation.MockReservationRepository;
 import hair.hairgg.mock.reservation.pay.MockPayService;
 import hair.hairgg.reservation.domain.Reservation;
 import hair.hairgg.reservation.domain.ReservationState;
-import hair.hairgg.reservation.service.reservation.ReservationService;
-import hair.hairgg.reservation.service.reservation.ReservationServiceImpl;
+import hair.hairgg.reservation.service.ReservationService;
+import hair.hairgg.reservation.service.ReservationServiceImpl;
 
 public class ReservationTest {
 
@@ -27,7 +29,8 @@ public class ReservationTest {
 		new MyMockReservationRepository(),
 		new MockPayService(),
 		new MockMemberService(),
-		new MockDesignerService()
+		new MockDesignerService(),
+		new GoogleCalendarService(new GoogleCalendarConfig())
 	);
 
 	private static class MyMockReservationRepository extends MockReservationRepository {

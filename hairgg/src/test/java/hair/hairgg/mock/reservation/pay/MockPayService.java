@@ -1,8 +1,8 @@
 package hair.hairgg.mock.reservation.pay;
 
 import hair.hairgg.reservation.domain.Reservation;
-import hair.hairgg.reservation.service.pay.PayInfo;
-import hair.hairgg.reservation.service.pay.PayService;
+import hair.hairgg.pay.PayInfo;
+import hair.hairgg.pay.PayService;
 
 public class MockPayService implements PayService {
 	@Override

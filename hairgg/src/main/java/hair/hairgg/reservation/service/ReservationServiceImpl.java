@@ -1,4 +1,4 @@
-package hair.hairgg.reservation.service.reservation;
+package hair.hairgg.reservation.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import hair.hairgg.calendar.service.CalendarService;
 import hair.hairgg.designer.domain.Designer;
 import hair.hairgg.designer.service.DesignerService;
 import hair.hairgg.exception.ErrorCode;
@@ -17,12 +18,10 @@ import hair.hairgg.member.MemberService;
 import hair.hairgg.reservation.ReservationConverter;
 import hair.hairgg.reservation.ReservationReqDto;
 import hair.hairgg.reservation.ReservationRepository;
-import hair.hairgg.reservation.ReservationResDto;
 import hair.hairgg.reservation.domain.Reservation;
 import hair.hairgg.reservation.domain.ReservationState;
-import hair.hairgg.reservation.service.ValidTimeManager;
-import hair.hairgg.reservation.service.pay.PayInfo;
-import hair.hairgg.reservation.service.pay.PayService;
+import hair.hairgg.pay.PayInfo;
+import hair.hairgg.pay.PayService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -35,6 +34,7 @@ public class ReservationServiceImpl implements ReservationService {
 	private final PayService payService;
 	private final MemberService memberService;
 	private final DesignerService designerService;
+	private final CalendarService calendarService;
 
 	@Transactional
 	@Override
@@ -60,6 +60,13 @@ public class ReservationServiceImpl implements ReservationService {
 		// 예약 상태 변경
 		reservation.updatePaymentInfo(payInfo.approved_at());
 		reservation.changeState(ReservationState.PAYMENT_COMPLETED);
+		try {
+			String url=calendarService.createEvent(reservation.getReservationDate(),"dnfldpden32@gmail.com", reservation.getId());
+			reservation.updateMeetUrl(url);
+		}catch (Exception e){
+			log.error(e.getMessage());
+			throw new ReservationError(ErrorCode.CALENDAR_EVENT_CREATE_ERROR);
+		}
 		return reservationRepository.save(reservation);
 	}
 

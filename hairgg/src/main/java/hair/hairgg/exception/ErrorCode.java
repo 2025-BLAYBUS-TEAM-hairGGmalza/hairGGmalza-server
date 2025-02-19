@@ -22,6 +22,8 @@ public enum ErrorCode {
 	RESERVATION_TIME_PAST(400, "R004", "예약 시간은 현재 시간보다 뒤여야 합니다."),
 	MEETING_TYPE_INVALID(400, "R005", "미팅 방식이 올바르지 않습니다."),
 	RESERVATION_TIME_TOO_FAR(400, "R006", "예약은 3개월 이내로 가능합니다."),
+	CALENDAR_EVENT_CREATE_ERROR(500, "R007", "google측 오류로 meet url 생성에 실패했습니다."),
+
 	//designer
 	DESIGNER_NOT_FOUND(404, "D001", "디자이너를 찾을 수 없습니다."),
 	PRICE_NOT_FOUND(404, "D002", "가격을 찾을 수 없습니다.");

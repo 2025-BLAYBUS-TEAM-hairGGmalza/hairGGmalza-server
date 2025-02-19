@@ -1,13 +1,12 @@
-package hair.hairgg.reservation.service.reservation;
+package hair.hairgg.reservation.service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
 import hair.hairgg.reservation.ReservationReqDto;
-import hair.hairgg.reservation.ReservationResDto;
 import hair.hairgg.reservation.domain.Reservation;
-import hair.hairgg.reservation.service.pay.PayInfo;
+import hair.hairgg.pay.PayInfo;
 
 public interface ReservationService {
 	PayInfo.PayReadyInfo createReservation(ReservationReqDto.ReservationRequest request);

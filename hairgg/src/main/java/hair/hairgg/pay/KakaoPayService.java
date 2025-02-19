@@ -1,4 +1,4 @@
-package hair.hairgg.reservation.service.pay;
+package hair.hairgg.pay;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import hair.hairgg.reservation.ReservationResDto;
 import hair.hairgg.reservation.domain.Reservation;
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,8 +20,11 @@ public class KakaoPayService implements PayService {
 	private static final String readyUrl = "https://open-api.kakaopay.com/online/v1/payment/ready";
 	private static final String approveUrl = "https://open-api.kakaopay.com/online/v1/payment/approve";
 
+	private final KakaoPayConfig kakaoPayConfig;
 	@Autowired
-	private KakaoPayConfig kakaoPayConfig;
+	public KakaoPayService(KakaoPayConfig kakaoPayConfig) {
+		this.kakaoPayConfig = kakaoPayConfig;
+	}
 
 	@Override
 	public PayInfo.PayReadyInfo payReady(Reservation reservation) {
