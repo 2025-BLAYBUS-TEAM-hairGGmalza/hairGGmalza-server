@@ -40,10 +40,12 @@ public class FavoriteServiceImpl implements FavoriteService {
                     .member(member)
                     .designer(designer)
                     .build();
+            designer.addFavorite();
             return favoriteRepository.save(favorite).getId();
         }
 
         favoriteRepository.delete(favorite);
+        designer.deleteFavorite();
         return null;
     }
 
