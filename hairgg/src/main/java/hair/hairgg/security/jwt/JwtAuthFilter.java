@@ -32,7 +32,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         String token = authorizationHeader.substring(7);
-
+        System.out.println("token: " + token);
         if (!jwtUtil.validateToken(token)) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write("Invalid or expired token");

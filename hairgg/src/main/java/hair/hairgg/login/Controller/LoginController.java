@@ -84,7 +84,6 @@ public class LoginController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
         }
 
-        // memberId를 사용해서 로직 처리
         return ResponseEntity.ok("Success! Member ID: " + memberId);
     }
 }
