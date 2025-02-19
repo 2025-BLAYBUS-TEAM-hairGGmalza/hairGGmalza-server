@@ -22,7 +22,7 @@ public enum ErrorCode {
 	RESERVATION_TIME_PAST(400, "R004", "예약 시간은 현재 시간보다 뒤여야 합니다."),
 	MEETING_TYPE_INVALID(400, "R005", "미팅 방식이 올바르지 않습니다."),
 	RESERVATION_TIME_TOO_FAR(400, "R006", "예약은 3개월 이내로 가능합니다."),
-	REFUND_ACCOUNT_NUMBER_REQUIRED(400, "R007", "환불 계좌번호가 필요합니다."),
+	REFUND_ACCOUNT_NUMBER_REQUIRED(400, "R007", "환불 계좌번호와 은행이 필요합니다."),
 	CALENDAR_EVENT_CREATE_ERROR(500, "R008", "google측 오류로 meet url 생성에 실패했습니다."),
 	INVALID_INPUT_VALUE_PAYMENT_METHOD(400, "R009", "결제 방식이 올바르지 않습니다."),
 

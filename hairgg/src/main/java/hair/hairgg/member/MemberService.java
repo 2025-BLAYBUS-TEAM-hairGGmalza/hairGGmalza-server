@@ -1,5 +1,7 @@
 package hair.hairgg.member;
 
+import hair.hairgg.exception.ErrorCode;
+import hair.hairgg.exception.custom.MemberError;
 import hair.hairgg.security.jwt.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,7 +23,9 @@ public class MemberService {
     }
 
     public Member findById(Long id) {
-        return memberRepository.findById(id).orElse(null);
+        return memberRepository.findById(id).orElseThrow(()->
+                new MemberError(ErrorCode.MEMBER_NOT_FOUND)
+        );
     }
 
     public Member getMemberFromJwt(String token) {
