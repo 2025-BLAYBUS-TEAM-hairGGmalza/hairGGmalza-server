@@ -22,7 +22,8 @@ public class ReservationReqDto {
 		String message,
 		@NotNull(message = "결제 수단은 필수 입력값입니다.")
 		PaymentMethod paymentMethod,
-		String RefundAccountNumber
+		String refundAccountBank,
+		String refundAccountNumber
 	) {
 	}
 }
