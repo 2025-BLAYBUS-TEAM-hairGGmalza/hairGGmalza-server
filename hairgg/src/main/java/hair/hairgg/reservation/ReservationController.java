@@ -19,6 +19,7 @@ import hair.hairgg.reservation.domain.Reservation;
 import hair.hairgg.pay.PayInfo;
 import hair.hairgg.reservation.domain.pay.PaymentMethod;
 import hair.hairgg.reservation.service.ReservationServiceImpl;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,13 +34,15 @@ public class ReservationController {
 
 	@PostMapping
 	public ApiResponse<?> createReservation(
+		HttpServletRequest servletRequest,
 		@Valid @RequestBody ReservationReqDto.ReservationRequest request) {
+		Long memberId = (Long) servletRequest.getAttribute("id");
 		if (request.paymentMethod().equals(PaymentMethod.TRANSFER)) {
-			Reservation reservation = reservationService.createReservationForTransfer(request);
+			Reservation reservation = reservationService.createReservationForTransfer(memberId,request);
 			return ApiResponse.success("예약 완료", ReservationConverter.toReservationInfo(reservation));
 		}
 		if(request.paymentMethod().equals(PaymentMethod.KAKAO_PAY)){
-			PayInfo.PayReadyInfo payInfo = reservationService.createReservation(request);
+			PayInfo.PayReadyInfo payInfo = reservationService.createReservation(memberId,request);
 			return ApiResponse.success("결제 요청 성공", payInfo);
 		}
 		log.info("예약 요청 실패: {}", request.paymentMethod());
@@ -82,5 +85,6 @@ public class ReservationController {
 		List<LocalTime> validTimes = reservationService.getValidTimes(designerId, reservationDate);
 		return ApiResponse.success("예약 가능 날짜 조회 성공", validTimes);
 	}
+
 
 }
