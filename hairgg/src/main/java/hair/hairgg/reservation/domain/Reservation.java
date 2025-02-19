@@ -56,7 +56,7 @@ public class Reservation {
 
 	@Builder
 	public Reservation(LocalDateTime reservationDate, MeetingType meetingType, Designer designer, Member member,
-		int price) {
+		int price, PaymentMethod paymentMethod) {
 		if (reservationDate == null || meetingType == null || designer == null || member == null) {
 			throw new ReservationError(ErrorCode.INVALID_INPUT_VALUE);
 		}
@@ -65,6 +65,7 @@ public class Reservation {
 		this.price = price;
 		this.designer = designer;
 		this.member = member;
+		this.paymentMethod = paymentMethod;
 		this.reservationState = ReservationState.WAITING;
 		this.meetUrl= "https://meet.google.com/landing";
 	}
@@ -75,7 +76,6 @@ public class Reservation {
 
 	public void updatePaymentInfo(LocalDateTime approvedAt) {
 		this.paymentAt = approvedAt;
-		paymentMethod = PaymentMethod.KAKAO_PAY;
 	}
 
 	public void updateTid(String tid) {
