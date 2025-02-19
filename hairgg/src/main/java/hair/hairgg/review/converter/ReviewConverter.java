@@ -15,6 +15,7 @@ public class ReviewConverter {
 
         return ReviewInfo.builder()
                 .reviewId(review.getId())
+                .reservationId(review.getReservation().getId())
                 .review(review.getReview())
                 .score(review.getScore())
                 .imageUrls(imageUrls)
