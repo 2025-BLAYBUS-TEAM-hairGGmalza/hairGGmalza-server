@@ -29,7 +29,7 @@ public class Review {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Designer designer;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "memberId")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Member member;
