@@ -22,7 +22,8 @@ public class DesignerDto {
             int offlinePrice,
             int onlinePrice,
             MeetingType meetingType,
-            List<Major> majors
+            List<String> majors,
+            int favoriteCount
     ) {
     }
 
