@@ -11,17 +11,15 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
 
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
-    private final CustomUserDetailsService customUserDetailsService;
 
-
-    public JwtAuthFilter(JwtUtil jwtUtil, CustomUserDetailsService customUserDetailsService) {
+    public JwtAuthFilter(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
-        this.customUserDetailsService = customUserDetailsService;
     }
 
     @Override
@@ -34,7 +32,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         String token = authorizationHeader.substring(7);
-
         System.out.println(token);
 
         if (!jwtUtil.validateToken(token)) {
@@ -43,14 +40,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             return;
         }
 
-        String email = jwtUtil.getEmailFromToken(token);
+        Map<String, Object> claims = jwtUtil.getClaimsFromToken(token);
         Long id = jwtUtil.getIdFromToken(token);
 
-        if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            //Member member = (Member) customUserDetailsService.loadUserByUsername(email);
-
+        if (claims != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(email, null, new ArrayList<>());
+                    new UsernamePasswordAuthenticationToken(claims, null, new ArrayList<>());
             request.setAttribute("id", id);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } else {

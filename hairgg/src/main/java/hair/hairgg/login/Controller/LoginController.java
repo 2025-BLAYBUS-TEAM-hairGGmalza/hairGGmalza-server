@@ -5,6 +5,7 @@ import hair.hairgg.login.Service.LoginService;
 import hair.hairgg.member.Member;
 import hair.hairgg.member.MemberRepository;
 import hair.hairgg.security.jwt.JwtUtil;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -37,14 +39,19 @@ public class LoginController {
         Member userInfo = loginService.getUserInfo(accessToken);
         String email = userInfo.getLoginId();
 
+        Map<String, Object> map = new HashMap<>();
+        map.put("googleId", userInfo.getGoogleId());
+        map.put("loginId", userInfo.getLoginId());
+        map.put("profileUrl", userInfo.getProfileUrl());
+
         Optional<Member> existingMember = memberRepository.findByLoginId(email);
 
 
         if (existingMember.isPresent()) {
-            String token = jwtUtil.generateToken(email, existingMember.get().getId());
+            String token = jwtUtil.generateToken(map, existingMember.get().getId());
             return ResponseEntity.ok().body(Map.of("token", token, "isFirstLogin", "false"));
         } else {
-            String token = jwtUtil.generateToken(email, 0L);
+            String token = jwtUtil.generateToken(map, 0L);
             return ResponseEntity.ok().body(Map.of("token", token, "userInfo", userInfo, "isFirstLogin", "true"));
         }
     }
@@ -55,11 +62,18 @@ public class LoginController {
 
         if(!memberId.equals(0L)) return null;
 
+        String token = request.getHeader("Authorization").substring(7);
+        Claims claims = jwtUtil.extractClaims(token);
+
+        member.setLoginId(claims.get("googleId", String.class));
+        member.setProfileUrl(claims.get("profileUrl", String.class));
+        member.setGoogleId(claims.get("googleId", String.class));
+
         Member newMember = memberRepository.save(member);
 
-        String token = jwtUtil.generateToken(newMember.getLoginId(), newMember.getId());
+        String newToken = jwtUtil.generateToken(claims, newMember.getId());
 
-        return ResponseEntity.ok().body(Map.of("token", token));
+        return ResponseEntity.ok().body(Map.of("token", newToken));
     }
 
     @PostMapping("/checkToken")

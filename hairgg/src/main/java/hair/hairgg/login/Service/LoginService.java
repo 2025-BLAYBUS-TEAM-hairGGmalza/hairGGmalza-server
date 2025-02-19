@@ -62,7 +62,6 @@ public class LoginService {
         ResponseEntity<Map> response = restTemplate.exchange(userInfoUrl, HttpMethod.GET, entity, Map.class);
 
         Map<String, Object> userInfo = response.getBody();
-        System.out.println("userInfo: " + userInfo);
 
         if (userInfo == null || !userInfo.containsKey("email") || !userInfo.containsKey("name") || !userInfo.containsKey("picture")) {
             throw new IllegalStateException("사용자 정보를 가져오는 데 실패했습니다.");
