@@ -1,6 +1,7 @@
 package hair.hairgg.review.domain;
 
 import hair.hairgg.designer.domain.Designer;
+import hair.hairgg.reservation.domain.Reservation;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
@@ -25,6 +26,11 @@ public class Review {
     @JoinColumn(name = "designerId")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Designer designer;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reservationId")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Reservation reservation;
 
     @Column(nullable = false, length = 1000)
     private String review;
