@@ -71,7 +71,7 @@ public class ReservationServiceImpl implements ReservationService {
 			// 	log.error(e.getMessage());
 			// 	throw new ReservationError(ErrorCode.CALENDAR_EVENT_CREATE_ERROR);
 			// }
-			savedReservation.updateMeetUrl("https://meet.google.com");
+			savedReservation.updateMeetUrl("https://meet.google.com/fcg-gjpm-qav");
 		}
 		return reservationRepository.save(savedReservation);
 	}
@@ -92,7 +92,7 @@ public class ReservationServiceImpl implements ReservationService {
 			// 	log.error(e.getMessage());
 			// 	throw new ReservationError(ErrorCode.CALENDAR_EVENT_CREATE_ERROR);
 			// }
-			reservation.updateMeetUrl("https://meet.google.com");
+			reservation.updateMeetUrl("https://meet.google.com/fcg-gjpm-qav");
 		}
 		return reservationRepository.save(reservation);
 	}
