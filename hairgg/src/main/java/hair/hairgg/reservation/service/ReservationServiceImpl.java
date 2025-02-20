@@ -64,13 +64,14 @@ public class ReservationServiceImpl implements ReservationService {
 		Reservation newReservation = ReservationConverter.toEntity(request, price, member, designer);
 		Reservation savedReservation= reservationRepository.save(newReservation);
 		if(savedReservation.getMeetingType().equals(MeetingType.ONLINE)) {
-			try {
-				String url=calendarService.createEvent(savedReservation.getReservationDate(),"dnfldpden32@gmail.com", savedReservation.getId());
-				savedReservation.updateMeetUrl(url);
-			}catch (Exception e){
-				log.error(e.getMessage());
-				throw new ReservationError(ErrorCode.CALENDAR_EVENT_CREATE_ERROR);
-			}
+			// try {
+			// 	String url=calendarService.createEvent(savedReservation.getReservationDate(),"dnfldpden32@gmail.com", savedReservation.getId());
+			// 	savedReservation.updateMeetUrl(url);
+			// }catch (Exception e){
+			// 	log.error(e.getMessage());
+			// 	throw new ReservationError(ErrorCode.CALENDAR_EVENT_CREATE_ERROR);
+			// }
+			savedReservation.updateMeetUrl("https://meet.google.com");
 		}
 		return reservationRepository.save(savedReservation);
 	}
@@ -84,13 +85,14 @@ public class ReservationServiceImpl implements ReservationService {
 		reservation.updatePaymentInfo(payInfo.approved_at());
 		reservation.changeState(ReservationState.PAYMENT_COMPLETED);
 		if(reservation.getMeetingType().equals(MeetingType.ONLINE)) {
-			try {
-				String url=calendarService.createEvent(reservation.getReservationDate(),"dnfldpden32@gmail.com", reservation.getId());
-				reservation.updateMeetUrl(url);
-			}catch (Exception e){
-				log.error(e.getMessage());
-				throw new ReservationError(ErrorCode.CALENDAR_EVENT_CREATE_ERROR);
-			}
+			// try {
+			// 	String url=calendarService.createEvent(reservation.getReservationDate(),"dnfldpden32@gmail.com", reservation.getId());
+			// 	reservation.updateMeetUrl(url);
+			// }catch (Exception e){
+			// 	log.error(e.getMessage());
+			// 	throw new ReservationError(ErrorCode.CALENDAR_EVENT_CREATE_ERROR);
+			// }
+			reservation.updateMeetUrl("https://meet.google.com");
 		}
 		return reservationRepository.save(reservation);
 	}
