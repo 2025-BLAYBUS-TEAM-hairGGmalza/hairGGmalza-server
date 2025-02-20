@@ -21,14 +21,14 @@ public class KakaoPayConfig {
 	private String baseUrl;
 
 	public String getApprovalUrl(Long reservationId) {
-		return baseUrl + "/test/"+reservationId;
+		return baseUrl + "test/"+reservationId;
 	}
 
 	public String getCancelUrl(Long reservationId) {
-		return baseUrl + "/test/fail"+reservationId;
+		return baseUrl + "test/fail"+reservationId;
 	}
 
 	public String getFailUrl(Long reservationId) {
-		return baseUrl + "/test/fail"+reservationId;
+		return baseUrl + "test/fail"+reservationId;
 	}
 }
