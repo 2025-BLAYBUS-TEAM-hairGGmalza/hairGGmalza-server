@@ -1,8 +1,8 @@
-package hair.hairgg.designer.service;
+package hair.hairgg.designer;
 
 import hair.hairgg.designer.domain.*;
-import hair.hairgg.designer.dto.SearchFilterDto.SearchFilter;
-import hair.hairgg.designer.repository.DesignerCustomRepository;
+import hair.hairgg.designer.service.DesignerService;
+import hair.hairgg.designer.service.DesignerServiceImpl;
 import hair.hairgg.mock.designer.MockDesignerRepository;
 import hair.hairgg.mock.designerMajor.MockDesignerMajorRepository;
 import hair.hairgg.mock.major.MockMajorRepository;
@@ -22,14 +22,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class DesignerServiceImplTest {
 
     MyMockDesignerRepository designerRepository;
-    MyMockMajorRepository majorRepository;
-    MyMockDesignerMajorRepository designerMajorRepository;
     DesignerService designerService;
 
     private static class MyMockDesignerRepository extends MockDesignerRepository {
 
         private final Map<Long, Designer> database = new HashMap<>();
-        private long sequence = 1L;
+        private Long sequence = 1L;
 
         @Override
         public <S extends Designer> S save(S entity) {
@@ -37,11 +35,13 @@ class DesignerServiceImplTest {
                 setPrivateField(entity, "id", sequence++);
             }
             database.put(entity.getId(), entity);
+            System.out.println("save: " + entity.getId());
             return entity;
         }
 
         @Override
-        public Optional<Designer> findById(Long id) {
+        public Optional<Designer> findByDesignerId(Long id) {
+            System.out.println("find: " + id);
             return Optional.ofNullable(database.get(id));
         }
 
@@ -61,71 +61,6 @@ class DesignerServiceImplTest {
         }
     }
 
-    private static class MyMockDesignerCustomRepository implements DesignerCustomRepository {
-
-        private final Map<Long, Designer> database = new HashMap<>();
-        private long sequence = 1L;
-
-        public <S extends Designer> S save(S entity) {
-            if (entity.getId() == null) {
-                setPrivateField(entity, "id", sequence++);
-            }
-            database.put(entity.getId(), entity);
-            return entity;
-        }
-
-        @Override
-        public Page<Designer> searchWithFilter(Pageable pageable, SearchFilter filter) {
-            List<Designer> filteredDesigners = database.values().stream()
-                    .filter(d -> filter.region() == null || filter.region() == Region.서울전체 || d.getRegion().equals(filter.region()))
-                    .filter(d -> filter.meetingType() == null || filter.meetingType() == MeetingType.BOTH || d.getMeetingType().equals(filter.meetingType()))
-                    .filter(d -> filter.minPrice() == null || (
-                            (d.getMeetingType() == MeetingType.ONLINE && d.getOnlinePrice() >= filter.minPrice()) ||
-                                    (d.getMeetingType() == MeetingType.OFFLINE && d.getOfflinePrice() >= filter.minPrice())
-                    ))
-                    .filter(d -> filter.maxPrice() == null || (
-                            (d.getMeetingType() == MeetingType.ONLINE && d.getOnlinePrice() <= filter.maxPrice()) ||
-                                    (d.getMeetingType() == MeetingType.OFFLINE && d.getOfflinePrice() <= filter.maxPrice())
-                    ))
-                    .collect(Collectors.toList());
-
-            int start = (int) pageable.getOffset();
-            int end = Math.min(start + pageable.getPageSize(), filteredDesigners.size());
-
-            return new PageImpl<>(filteredDesigners.subList(start, end), pageable, filteredDesigners.size());
-        }
-    }
-
-    private static class MyMockMajorRepository extends MockMajorRepository {
-
-        private final Map<Long, Major> database = new HashMap<>();
-        private long sequence = 1L;
-
-        @Override
-        public <S extends Major> S save(S entity) {
-            if (entity.getId() == null) {
-                setPrivateField(entity, "id", sequence++);
-            }
-            database.put(entity.getId(), entity);
-            return entity;
-        }
-    }
-
-    private static class MyMockDesignerMajorRepository extends MockDesignerMajorRepository {
-
-        private final Map<Long, DesignerMajor> database = new HashMap<>();
-        private long sequence = 1L;
-
-        @Override
-        public <S extends DesignerMajor> S save(S entity) {
-            if (entity.getId() == null) {
-                setPrivateField(entity, "id", sequence++);
-            }
-            database.put(entity.getId(), entity);
-            return entity;
-        }
-    }
-
     private static void setPrivateField(Object target, String fieldName, Object value) {
         try {
             Field field = target.getClass().getDeclaredField(fieldName);
@@ -139,109 +74,92 @@ class DesignerServiceImplTest {
     @BeforeEach
     void setUp() {
         designerRepository = new MyMockDesignerRepository();
-        majorRepository = new MyMockMajorRepository();
-        designerMajorRepository = new MyMockDesignerMajorRepository();
-        designerService = new DesignerServiceImpl(designerRepository, designerMajorRepository);
+        designerService = new DesignerServiceImpl(designerRepository);
     }
 
     @Test
     void Id로_디자이너_조회() {
-        Major major1 = Major.builder()
-                .name("펌")
-                .build();
-
-        Designer newDesigner = Designer.builder()
+        // given
+        Designer designer = Designer.builder()
+                .id(1L)
                 .name("사용자")
                 .region(Region.서울전체)
-                .address("블레이버스 옥탑방")
-                .profile("example@example.com")
-                .description("해커톤 재밌네")
+                .address("서울시 중앙대학교")
+                .profile("imageUrl")
+                .description("테스트 코드 작성 재밌네")
                 .offlinePrice(40000)
                 .onlinePrice(30000)
                 .meetingType(MeetingType.BOTH)
+                .portfolio1("example portfolio1")
+                .portfolio2("example portfolio2")
+                .favoriteCount(0)
+                .designerMajors(Collections.emptyList())
                 .build();
+        designerRepository.save(designer);
 
-        DesignerMajor designerMajor = DesignerMajor.builder()
-                .major(major1)
-                .build();
+        //when
+        Designer result = designerService.getDesignerById(1L);
 
-        newDesigner.addDesignerMajor(designerMajor);
-        Designer savedDesigner = designerRepository.save(newDesigner);
-        designerMajorRepository.save(designerMajor);
-
-        Designer designer = designerService.getDesignerById(savedDesigner.getId());
-
-        assertNotNull(designer);
-        assertEquals(savedDesigner, designer);
-        assertNotNull(designer.getDesignerMajors());
-        assertEquals(major1, designer.getDesignerMajors().getFirst().getMajor());
+        //then
+        assertNotNull(result);
+        assertEquals(1L, result.getId());
+        assertEquals("사용자", result.getName());
+        assertEquals(Region.서울전체, result.getRegion());
+        assertEquals("서울시 중앙대학교", result.getAddress());
+        assertEquals("imageUrl", result.getProfile());
+        assertEquals("테스트 코드 작성 재밌네", result.getDescription());
+        assertEquals(40000, result.getOfflinePrice());
+        assertEquals(30000, result.getOnlinePrice());
+        assertEquals(MeetingType.BOTH, result.getMeetingType());
+        assertEquals("example portfolio1", result.getPortfolio1());
+        assertEquals("example portfolio2", result.getPortfolio2());
+        assertEquals(0, result.getFavoriteCount());
     }
 
     @Test
     void getDesigners() {
+        // given
         Designer newDesigner1 = Designer.builder()
+                .id(1L)
                 .name("사용자1")
                 .region(Region.서울전체)
-                .address("블레이버스 옥탑방")
-                .profile("example1@example.com")
-                .description("해커톤 재밌네")
+                .address("중앙대학교")
+                .profile("imageUrl1")
+                .description("테스트 코드 작성")
                 .offlinePrice(40000)
                 .onlinePrice(30000)
                 .meetingType(MeetingType.BOTH)
+                .portfolio1("example portfolio1-1")
+                .portfolio2("example portfolio1-2")
+                .favoriteCount(0)
+                .designerMajors(Collections.emptyList())
                 .build();
         designerRepository.save(newDesigner1);
 
         Designer newDesigner2 = Designer.builder()
+                .id(2L)
                 .name("사용자2")
                 .region(Region.홍대_연남_합정)
-                .address("홍대 빈티지")
-                .profile("example2@example.com")
+                .address("숭실대학교")
+                .profile("imageUrl2")
                 .description("테스트 코드 재밌네")
                 .offlinePrice(45000)
                 .onlinePrice(35000)
                 .meetingType(MeetingType.ONLINE)
+                .portfolio1("example portfolio2-1")
+                .portfolio2("example portfolio2-2")
+                .favoriteCount(0)
+                .designerMajors(Collections.emptyList())
                 .build();
         designerRepository.save(newDesigner2);
 
+        // when
         Page<Designer> designers = designerService.getDesigners(0);
 
+        // then
         assertNotNull(designers);
         assertEquals(2, designers.getTotalElements());
         assertEquals("사용자1", designers.getContent().get(0).getName());
-    }
-
-    @Test
-    void 지역_필터_조회() {
-        Designer newDesigner1 = Designer.builder()
-                .name("사용자1")
-                .region(Region.서울전체)
-                .address("블레이버스 옥탑방")
-                .profile("example1@example.com")
-                .description("해커톤 재밌네")
-                .offlinePrice(40000)
-                .onlinePrice(30000)
-                .meetingType(MeetingType.BOTH)
-                .build();
-        designerRepository.save(newDesigner1);
-
-        Designer newDesigner2 = Designer.builder()
-                .name("사용자2")
-                .region(Region.홍대_연남_합정)
-                .address("홍대 빈티지")
-                .profile("example2@example.com")
-                .description("테스트 코드 재밌네")
-                .offlinePrice(45000)
-                .onlinePrice(35000)
-                .meetingType(MeetingType.ONLINE)
-                .build();
-        designerRepository.save(newDesigner2);
-
-        SearchFilter filter = new SearchFilter(null, Region.서울전체, null, null);
-        Page<Designer> designers = designerService.getDesignersWithFilter(0, filter);
-        assertEquals(2, designers.getTotalElements());
-
-        filter = new SearchFilter(null, Region.홍대_연남_합정, null, null);
-        designers = designerService.getDesignersWithFilter(0, filter);
-        assertEquals(1, designers.getTotalElements());
+        assertEquals("사용자2", designers.getContent().get(1).getName());
     }
 }

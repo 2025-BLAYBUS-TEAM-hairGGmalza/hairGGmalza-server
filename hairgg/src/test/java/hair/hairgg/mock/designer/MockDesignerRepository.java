@@ -1,6 +1,7 @@
 package hair.hairgg.mock.designer;
 
 import hair.hairgg.designer.domain.Designer;
+import hair.hairgg.designer.dto.SearchFilterDto;
 import hair.hairgg.designer.repository.DesignerRepository;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
@@ -16,6 +17,11 @@ public class MockDesignerRepository implements DesignerRepository {
     @Override
     public Page<Designer> findAll(Pageable pageable) {
         return null;
+    }
+
+    @Override
+    public Optional<Designer> findByDesignerId(Long designerId) {
+        return Optional.empty();
     }
 
     @Override
@@ -160,6 +166,11 @@ public class MockDesignerRepository implements DesignerRepository {
 
     @Override
     public List<Designer> findAll(Sort sort) {
+        return null;
+    }
+
+    @Override
+    public Page<Designer> searchWithFilter(Pageable pageable, SearchFilterDto filter) {
         return null;
     }
 }

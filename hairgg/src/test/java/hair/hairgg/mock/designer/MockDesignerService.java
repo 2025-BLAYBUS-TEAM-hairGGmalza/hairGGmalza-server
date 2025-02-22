@@ -1,5 +1,6 @@
 package hair.hairgg.mock.designer;
 
+import hair.hairgg.designer.dto.SearchFilterDto;
 import org.springframework.data.domain.Page;
 
 import hair.hairgg.designer.domain.Designer;
@@ -13,13 +14,18 @@ public class MockDesignerService implements DesignerService {
 	@Override
 	public Designer getDesignerById(Long id) {
 		if (id == 1) {
-			return new Designer(1L, "김디자이너", Region.서울전체, "서울시 강남구", "fdsd", "fdsf", 1000, 2000, MeetingType.BOTH,null);
+			return new Designer(1L, "김디자이너", Region.서울전체, "서울시 강남구", "fdsd", "fdsf", 1000, 2000, MeetingType.BOTH,null, null, 0, null);
 		}
 		throw new GeneralException(ErrorCode.DESIGNER_NOT_FOUND);
 	}
 
 	@Override
 	public Page<Designer> getDesigners(Integer page) {
+		return null;
+	}
+
+	@Override
+	public Page<Designer> getDesignersWithFilter(Integer page, SearchFilterDto filter) {
 		return null;
 	}
 }
